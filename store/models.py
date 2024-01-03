@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+import random as rd 
 # Create your models here.
 
 class ProductType(models.Model):
@@ -48,7 +49,7 @@ class Shop(models.Model):
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
     # information
     name = models.CharField(max_length=255)
-    code = models.CharField(max_length=8, unique=True, blank=True)
+    code = models.CharField(max_length=6, unique=True, blank=True, null=True)
     contact = models.CharField(max_length=255, blank=True)
     tel = models.CharField(max_length=10, blank=True)
     fax = models.CharField(max_length=10, blank=True)
@@ -58,7 +59,7 @@ class Shop(models.Model):
     province = models.CharField(max_length=255, blank=True)
     district = models.CharField(max_length=255, blank=True)
     sub_district = models.CharField(max_length=255, blank=True)
-    address = models.TextField(blank=True)
+    address = models.TextField(blank=True, null=True)
     # timestamp
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -72,7 +73,7 @@ class Product(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE)
     # information
-    code = models.CharField(max_length=8, unique=True)
+    code = models.CharField(max_length=8, unique=True, null=True)
     name = models.CharField(max_length=255)
     desc = models.TextField()
     unit = models.IntegerField()
@@ -100,10 +101,10 @@ class ProductDelete(models.Model):
 class InputInvoice(models.Model):
     id = models.BigAutoField(primary_key=True)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    invoice_no = models.CharField(max_length=16)
+    invoice_no = models.CharField(max_length=16, unique=True, null=True)
     total_price = models.DecimalField(max_digits=9, decimal_places=2)
     discount = models.DecimalField(max_digits=9, decimal_places=2)
-    remark = models.TextField(blank=True)
+    remark = models.TextField(blank=True, null=True)
     # timestamp 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
