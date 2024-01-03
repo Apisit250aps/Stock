@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     
     'store',
+    'app',
 ]
 
 REST_FRAMEWORK = {
@@ -62,6 +63,10 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'core.urls'
+
+LOGIN_URL = "auth-login/"
+
+LOGOUT_REDIRECT_URL = "auth-login/"
 
 TEMPLATES = [
     {
