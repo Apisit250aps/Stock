@@ -21,7 +21,7 @@ from django.db.models import Q
 from datetime import datetime
 
 from . import models
-
+from . import serializers
 
 # Create your views here.
 
@@ -94,7 +94,7 @@ def createShop(request):
     district = request.data['district']
     sub_district = request.data['sub_district']
     address = request.data['address']
-    
+
     try:
         shop = models.Shop.objects.create(
             user=user,
@@ -127,5 +127,20 @@ def createShop(request):
 @api_view(["POST", ])
 @permission_classes((IsAuthenticated,))
 def updateShop(request):
-    
+
     return Response()
+
+
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((IsAuthenticated,))
+def getStoreProducts(request):
+    http_status = status.HTTP_200_OK
+
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+
+    productQuery = models.Product.objects.filter(shop=shop)
+    productSerializers = serializers.ProductSerializer(productQuery, many=True)
+
+    return Response(status=http_status, data=productSerializers.data)

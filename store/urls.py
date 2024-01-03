@@ -18,5 +18,9 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('auth-login', views.loginUser, name='login-api')
+    path('auth-login', views.loginUser, name='login-api'),
+
+
+
+    path('store-product', views.getStoreProducts, name='get-store-product-api'),
 ]
