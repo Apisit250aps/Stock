@@ -137,10 +137,23 @@
                             </tr>
                         </tbody>
                     </table>
+                    <div class="row row-cols-1 mx-auto g-0">
 
-
-
-
+                        <div class="col">
+                            <div class="mb-3">
+                                <label class="form-label" for="remark">Remark</label>
+                                <div class="input-group input-group-merge">
+                                    <span id="remark" class="input-group-text"><i class="bx bx-comment"></i></span>
+                                    <textarea id="remark" class="form-control" placeholder="Remark"
+                                        aria-label="Hi, Do you have a moment to talk Joe?" aria-describedby="remark"
+                                        v-model="remark"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-end mb-4">
+                        <button type="button" @click="" class="btn btn-success align-self-end">Save</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -197,10 +210,6 @@
                         isValid = false;
                     }
                     if (this.product.category == "") {
-                        isValid = false;
-                    }
-
-                    if (this.product.discount == 0) {
                         isValid = false;
                     }
                     if (this.product.unit == 0) {
@@ -282,7 +291,7 @@
                 onSave(e) {
                     const products = JSON.stringify(Object.assign({}, this.productObject));
                     const form_data = new FormData();
-                    
+
                     form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
                     form_data.append("products", products);
                 }
