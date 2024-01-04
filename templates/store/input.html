@@ -21,26 +21,25 @@
                                 <div class="input-group input-group-merge">
                                     <span id="product-name2" class="input-group-text"><i
                                             class="bx bx-package"></i></span>
-                                    <input type="text" class="form-control" id="product-name"
-                                        placeholder="" aria-label="Product"
-                                        aria-describedby="product-name2" />
+                                    <input type="text" class="form-control" id="product-name" placeholder=""
+                                        aria-label="Product" aria-describedby="product-name2" v-model="product.name" />
                                 </div>
                             </div>
                         </div>
                         <div class="col">
                             <div class="mb-3">
                                 <label for="cetegory" class="form-label">Category</label>
-                                <select id="cetegory" class="form-select">
-                                  <option>Default select</option>
-                                  <option value="1">One</option>
-                                  <option value="2">Two</option>
-                                  <option value="3">Three</option>
+                                <select id="cetegory" class="form-select" v-model="product.category">
+                                    <option>Default select</option>
+                                    <option value="1">One</option>
+                                    <option value="2">Two</option>
+                                    <option value="3">Three</option>
                                 </select>
-                              </div>
+                            </div>
                         </div>
                     </div>
                     <div class="row row-cols-1 mx-auto g-0">
-                        
+
                         <div class="col">
                             <div class="mb-3">
                                 <label class="form-label" for="descriptions">Description</label>
@@ -50,7 +49,7 @@
                                     <textarea id="descriptions" class="form-control"
                                         placeholder="Tell about this product"
                                         aria-label="Hi, Do you have a moment to talk Joe?"
-                                        aria-describedby="descriptions"></textarea>
+                                        aria-describedby="descriptions" v-model="product.desc"></textarea>
                                 </div>
                             </div>
                         </div>
@@ -61,11 +60,9 @@
                             <div class="mb-3">
                                 <label class="form-label" for="price">Price</label>
                                 <div class="input-group input-group-merge">
-                                    <span id="price" class="input-group-text"><i
-                                            class="bx bx-money"></i></span>
-                                    <input type="number" min="0" id="price" class="form-control"
-                                        placeholder=" .฿" aria-label=" .฿"
-                                        aria-describedby="price" />
+                                    <span id="price" class="input-group-text"><i class="bx bx-money"></i></span>
+                                    <input type="number" min="0" id="price" class="form-control" placeholder=" .฿"
+                                        aria-label=" .฿" aria-describedby="price" v-model="product.price" />
                                 </div>
                             </div>
                         </div>
@@ -73,11 +70,9 @@
                             <div class="mb-3">
                                 <label class="form-label" for="unit">Unit</label>
                                 <div class="input-group input-group-merge">
-                                    <span id="unit" class="input-group-text"><i
-                                            class="bx bx-package"></i></span>
-                                    <input type="number" min="0" id="unit" class="form-control"
-                                        placeholder="Unit" aria-label="Unit"
-                                        aria-describedby="unit" />
+                                    <span id="unit" class="input-group-text"><i class="bx bx-package"></i></span>
+                                    <input type="number" min="0" id="unit" class="form-control" placeholder="Unit"
+                                        aria-label="Unit" aria-describedby="unit" v-model="product.unit" />
                                 </div>
                             </div>
                         </div>
@@ -85,11 +80,9 @@
                             <div class="mb-3">
                                 <label class="form-label" for="cost">Cost</label>
                                 <div class="input-group input-group-merge">
-                                    <span id="cost2" class="input-group-text"><i
-                                            class="bx bx-coin"></i></span>
-                                    <input type="number" min="0" id="cost" class="form-control"
-                                        placeholder=" .฿" aria-label=" .฿"
-                                        aria-describedby="cost2" />
+                                    <span id="cost2" class="input-group-text"><i class="bx bx-coin"></i></span>
+                                    <input type="number" min="0" id="cost" class="form-control" placeholder=" .฿"
+                                        aria-label=" .฿" aria-describedby="cost2" v-model="product.cost" />
                                 </div>
                             </div>
                         </div>
@@ -97,11 +90,9 @@
                             <div class="mb-3">
                                 <label class="form-label" for="discount">Discount</label>
                                 <div class="input-group input-group-merge">
-                                    <span id="discount2" class="input-group-text"><i
-                                            class="bx bxs-offer"></i></span>
-                                    <input type="number" min="0" id="discount" class="form-control"
-                                        placeholder=" .฿" aria-label=" .฿"
-                                        aria-describedby="discount2" />
+                                    <span id="discount2" class="input-group-text"><i class="bx bxs-offer"></i></span>
+                                    <input type="number" min="0" id="discount" class="form-control" placeholder=" .฿"
+                                        aria-label=" .฿" aria-describedby="discount2" v-model="product.discount" />
                                 </div>
                             </div>
                         </div>
@@ -109,46 +100,47 @@
                             <div class="mb-3">
                                 <label class="form-label" for="total">Total</label>
                                 <div class="input-group input-group-merge">
-                                    <span id="total2" class="input-group-text"><i
-                                            class="bx bx-coin-stack"></i></span>
-                                    <input type="number" min="0" id="total" class="form-control"
-                                        placeholder=" .฿" aria-label=" .฿"
-                                        aria-describedby="total2" />
+                                    <span id="total2" class="input-group-text"><i class="bx bx-coin-stack"></i></span>
+                                    <input type="number" min="0" id="total" class="form-control" placeholder=" .฿"
+                                        aria-label=" .฿" aria-describedby="total2" v-model="total" disabled />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="basic-icon-default-company">Company</label>
-                        <div class="input-group input-group-merge">
-                            <span id="basic-icon-default-company2" class="input-group-text"><i
-                                    class="bx bx-buildings"></i></span>
-                            <input type="text" id="basic-icon-default-company" class="form-control"
-                                placeholder="ACME Inc." aria-label="ACME Inc."
-                                aria-describedby="basic-icon-default-company2" />
-                        </div>
+                    <div class="d-flex align-items-center justify-content-end mb-4">
+                        <button type="button" @click="deleteProduct()" class="btn btn-danger align-self-end mx-2"
+                            v-show="onEdit">Delete</button>
+                        <button type="button" @click="addProduct()" class="btn btn-primary align-self-end"
+                            v-show="!onEdit">Send</button>
+                        <button type="button" @click="editProduct()" class="btn btn-primary align-self-end"
+                            v-show="onEdit">Edit</button>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="basic-icon-default-email">Email</label>
-                        <div class="input-group input-group-merge">
-                            <span class="input-group-text"><i class="bx bx-envelope"></i></span>
-                            <input type="text" id="basic-icon-default-email" class="form-control" placeholder="john.doe"
-                                aria-label="john.doe" aria-describedby="basic-icon-default-email2" />
-                            <span id="basic-icon-default-email2" class="input-group-text">@example.com</span>
-                        </div>
-                        <div class="form-text">You can use letters, numbers & periods</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label" for="basic-icon-default-phone">Phone No</label>
-                        <div class="input-group input-group-merge">
-                            <span id="basic-icon-default-phone2" class="input-group-text"><i
-                                    class="bx bx-phone"></i></span>
-                            <input type="text" id="basic-icon-default-phone" class="form-control phone-mask"
-                                placeholder="658 799 8941" aria-label="658 799 8941"
-                                aria-describedby="basic-icon-default-phone2" />
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send</button>
+                    <table class="table mb-4 table-hover">
+                        <thead>
+                            <th>#</th>
+                            <th>product name</th>
+                            <th>category</th>
+                            <th>price</th>
+                            <th>unit</th>
+                            <th>discount</th>
+                            <th>total</th>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in productObject" :key="index" @click="setProduct(index)">
+                                <td>[{ index +1 }]</td>
+                                <td>[{ item.name }]</td>
+                                <td>[{ item.category }]</td>
+                                <td>[{ item.price }]</td>
+                                <td>[{ item.unit }]</td>
+                                <td>[{ item.discount }]</td>
+                                <td>[{ item.total }]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+
+
+
                 </form>
             </div>
         </div>
@@ -158,7 +150,7 @@
 <!--  -->
 {% block script %}
 <script>
-    const { createApp } = Vue;
+    const { createApp, computed } = Vue;
     const app = createApp(
         {
             delimiters: ["[{", "}]"],
@@ -166,9 +158,24 @@
                 return {
                     layout: "store",
                     page: "input",
-                    date: ""
+                    date: "",
+                    total: computed(() => {
+                        return this.product.price * this.product.unit - this.product.discount;
+                    }),
+                    product: {
+                        name: "",
+                        category: "",
+                        desc: "",
+                        discount: 0,
+                        unit: 0,
+                        cost: 0,
+                        price: 0,
+                        total: 0
 
-
+                    },
+                    productObject: new Array,
+                    onEdit: false,
+                    indexSelect: null
                 };
             },
             mounted() {
@@ -180,7 +187,105 @@
                     minute: 'numeric',
                     hour12: false
                 });
+            },
+            methods: {
+                addProduct() {
+                    this.onEdit = false;
+                    let isValid = true;
 
+                    if (this.product.name == "") {
+                        isValid = false;
+                    }
+                    if (this.product.category == "") {
+                        isValid = false;
+                    }
+
+                    if (this.product.discount == 0) {
+                        isValid = false;
+                    }
+                    if (this.product.unit == 0) {
+                        isValid = false;
+                    }
+                    if (this.product.cost == 0) {
+                        isValid = false;
+                    }
+                    if (this.product.price == 0) {
+                        isValid = false;
+                    }
+
+                    if (isValid) {
+                        this.product.total = (this.product.price * this.product.unit - this.product.discount);
+                        this.productObject.push(this.product);
+                        this.product = {
+                            name: "",
+                            category: "",
+                            desc: "",
+                            discount: 0,
+                            unit: 0,
+                            cost: 0,
+                            price: 0,
+
+                        };
+                        this.total = computed(() => {
+                            return this.product.price * this.product.unit - this.product.discount;
+                        });
+                    }
+                },
+                setProduct(index) {
+                    this.indexSelect = index;
+                    this.onEdit = true;
+                    this.product.name = this.productObject[index].name;
+                    this.product.category = this.productObject[index].category;
+                    this.product.desc = this.productObject[index].desc;
+                    this.product.discount = this.productObject[index].discount;
+                    this.product.unit = this.productObject[index].unit;
+                    this.product.cost = this.productObject[index].cost;
+                    this.product.price = this.productObject[index].price;
+                },
+                editProduct() {
+                    this.productObject[this.indexSelect].name = this.product.name;
+                    this.productObject[this.indexSelect].category = this.product.category;
+                    this.productObject[this.indexSelect].desc = this.product.desc;
+                    this.productObject[this.indexSelect].discount = this.product.discount;
+                    this.productObject[this.indexSelect].unit = this.product.unit;
+                    this.productObject[this.indexSelect].cost = this.product.cost;
+                    this.productObject[this.indexSelect].price = this.product.price;
+                    this.productObject[this.indexSelect].total = (this.product.price * this.product.unit - this.product.discount);
+
+                    this.onEdit = false;
+                    this.indexSelect = null;
+                    this.product = {
+                        name: "",
+                        category: "",
+                        desc: "",
+                        discount: 0,
+                        unit: 0,
+                        cost: 0,
+                        price: 0,
+                    };
+
+                },
+                deleteProduct() {
+                    this.productObject.splice(this.indexSelect, 1);
+                    this.onEdit = false;
+                    this.indexSelect = null;
+                    this.product = {
+                        name: "",
+                        category: "",
+                        desc: "",
+                        discount: 0,
+                        unit: 0,
+                        cost: 0,
+                        price: 0,
+                    };
+                },
+                onSave(e) {
+                    const products = JSON.stringify(Object.assign({}, this.productObject));
+                    const form_data = new FormData();
+                    
+                    form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                    form_data.append("products", products);
+                }
             }
         }
     );

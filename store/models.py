@@ -111,7 +111,7 @@ class InputInvoice(models.Model):
     
     def __str__(self):
         return self.invoice_no
-    
+
 class InputData(models.Model):
     id = models.BigAutoField(primary_key=True)
     invoice = models.ForeignKey(InputInvoice, on_delete=models.CASCADE)
