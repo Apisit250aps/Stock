@@ -21,6 +21,13 @@ urlpatterns = [
     path('auth-login', views.loginUser, name='login-api'),
 
 
+    path('get-product-type', views.getProductType, name='get-product-type-api'),
+    path('get-product-category', views.getProductCategory, name='get-product-category-api'),
 
-    path('store-product', views.getStoreProducts, name='get-store-product-api'),
+
+
+    path('store-product', views.ShopProducts, name='get-store-product-api'),
+    path('store-invoice', views.shopInvoice, name='get-shop-invoice-api'),
+
+    path('create-input-data', views.createInputData, name='create-input-data-api')
 ]

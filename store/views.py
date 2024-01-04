@@ -16,14 +16,38 @@ from django.db.models import Sum
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
-from django.db.models import Q
+from django.db.models import Q, F
 
 from datetime import datetime
+import json
+import random
 
 from . import models
 from . import serializers
 
 # Create your views here.
+
+
+def invoice_code():
+
+    date = datetime.today().date().__str__().replace("-", "")
+    if models.InputInvoiceCounter.objects.filter(on_date=date).count() == 0:
+        models.InputInvoiceCounter.objects.create(on_date=date)
+    else:
+        models.InputInvoiceCounter.objects.filter(
+            on_date=date).update(no=F('no')+1)
+    count = models.InputInvoiceCounter.objects.get(on_date=date)
+
+    return date+"{0:04}".format(int(count.no))
+
+
+def product_code(category):
+    models.ProductCategory.objects.filter(
+        id=category).update(count=F('count')+1)
+    cats = models.ProductCategory.objects.get(id=category)
+    count = "{0:04}".format(cats.count)
+    code = f"{cats.id}"+count
+    return code
 
 
 @csrf_exempt
@@ -74,6 +98,30 @@ def loginUser(request):
         http_status = status.HTTP_400_BAD_REQUEST
 
     return Response(status=http_status)
+
+
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((AllowAny,))
+def getProductType(request):
+    product_typeQuery = models.ProductType.objects.all()
+    product_typeSerializer = serializers.ProductTypeSerializer(
+        product_typeQuery, many=True)
+    return Response(status=status.HTTP_200_OK, data=product_typeSerializer.data)
+
+
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((IsAuthenticated,))
+def getProductCategory(request):
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+
+    product_CategoryQuery = models.ProductCategory.objects.filter(
+        type=int(shop.product_type.id))
+    product_CategorySerializer = serializers.ProductCategorySerializer(
+        product_CategoryQuery, many=True)
+    return Response(status=status.HTTP_200_OK, data=product_CategorySerializer.data)
 
 
 @csrf_exempt
@@ -132,15 +180,83 @@ def updateShop(request):
 
 
 @csrf_exempt
+@api_view(["POST", ])
+@permission_classes((AllowAny,))
+def createInputData(request):
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+    total_discount = 0
+    total_price = 0
+    remark = ""
+    invoice_no = invoice_code()
+
+    invoice = models.InputInvoice.objects.create(
+        shop=shop,
+        invoice_no=invoice_no,
+        remark=remark,
+    )
+
+    # create product and input data
+    products = json.loads(request.data['products'])
+    for key, value in products.items():
+
+        total_price += value['total']
+        total_discount += value['discount']
+
+        discount = value['discount']
+        quantity = value['unit']
+        unit_price = value['price']
+
+        del value['total']
+        del value['discount']
+        value['shop'] = shop
+        cats = value['category']
+        print(cats, type(cats))
+
+        value['category'] = models.ProductCategory.objects.get(
+            id=int(value['category']))
+        value['code'] = product_code(cats)
+
+        product = models.Product.objects.create(**value)
+        input_data = models.InputData.objects.create(
+            product=product,
+            quantity=quantity,
+            invoice=invoice,
+            unit_price=unit_price,
+            discount=discount
+        )
+
+    models.InputInvoice.objects.filter(id=invoice.id).update(
+        total_price=total_price, discount=total_discount)
+
+    return Response(status=status.HTTP_201_CREATED)
+
+
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((AllowAny,))
+def shopInvoice(request):
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+
+    invoiceQuery = models.InputInvoice.objects.filter(
+        shop=shop).order_by('-updated_at')
+    invoiceSerializer = serializers.InputInvoiceSerializer(
+        invoiceQuery, many=True)
+
+    return Response(status=status.HTTP_200_OK, data=invoiceSerializer.data)
+
+
+@csrf_exempt
 @api_view(["GET", ])
 @permission_classes((IsAuthenticated,))
-def getStoreProducts(request):
+def ShopProducts(request):
     http_status = status.HTTP_200_OK
 
     user = User.objects.get(username=request.user.username)
     shop = models.Shop.objects.get(user=user)
 
-    productQuery = models.Product.objects.filter(shop=shop)
+    productQuery = models.Product.objects.filter(shop=shop).order_by('-updated_at')
     productSerializers = serializers.ProductSerializer(productQuery, many=True)
 
     return Response(status=http_status, data=productSerializers.data)

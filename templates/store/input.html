@@ -30,10 +30,8 @@
                             <div class="mb-3">
                                 <label for="cetegory" class="form-label">Category</label>
                                 <select id="cetegory" class="form-select" v-model="product.category">
-                                    <option>Default select</option>
-                                    <option value="1">One</option>
-                                    <option value="2">Two</option>
-                                    <option value="3">Three</option>
+                                    <option v-for="(item, index) in category_list" :key="index" :value="item.id">
+                                        [{item.name}]</option>
                                 </select>
                             </div>
                         </div>
@@ -152,7 +150,8 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-end mb-4">
-                        <button type="button" @click="" class="btn btn-success align-self-end">Save</button>
+                        <button type="submit" @click="onSave($event)"
+                            class="btn btn-success align-self-end">Save</button>
                     </div>
                 </form>
             </div>
@@ -172,6 +171,8 @@
                     layout: "store",
                     page: "input",
                     date: "",
+                    category_list: null,
+
                     total: computed(() => {
                         return this.product.price * this.product.unit - this.product.discount;
                     }),
@@ -199,6 +200,16 @@
                     hour: 'numeric',
                     minute: 'numeric',
                     hour12: false
+                });
+
+
+                axios(
+                    {
+                        method: 'get',
+                        url: "{% url 'get-product-category-api' %}"
+                    }
+                ).then((response) => {
+                    this.category_list = response.data;
                 });
             },
             methods: {
@@ -289,11 +300,49 @@
                     };
                 },
                 onSave(e) {
+
+                    e.preventDefault();
                     const products = JSON.stringify(Object.assign({}, this.productObject));
                     const form_data = new FormData();
 
                     form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
                     form_data.append("products", products);
+
+                    axios(
+                        {
+                            method: "post",
+                            url: "{% url 'create-input-data-api' %}",
+                            data: form_data
+                        }
+                    ).then((response) => {
+                        if (response.status == 201) {
+                            Swal.fire({
+                                title: "Successfully!",
+                                text: "Products Created!",
+                                icon: "success"
+                            });
+                            this.product = {
+                                name: "",
+                                category: "",
+                                desc: "",
+                                discount: 0,
+                                unit: 0,
+                                cost: 0,
+                                price: 0,
+                            };
+
+                            setTimeout(()=>{
+                                location.reload()
+                            }, 1000)
+                        }
+                        else {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Something Error!",
+                                icon: "error"
+                            });
+                        }
+                    });
                 }
             }
         }
