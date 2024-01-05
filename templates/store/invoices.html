@@ -2,7 +2,6 @@
 <!--  -->
 {% block content %}
 <!--  -->
-
 <div class="card h-100">
     <h5 class="card-header">Invoices</h5>
     <div class="table-responsive text-nowrap overflow-y-scroll">
@@ -19,9 +18,9 @@
             <tbody>
                 <tr v-for="(item, index) in invoices" :key="index">
                     <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>INV-[{item.invoice_no}]</strong></td>
-                    <td>[{item.total_price}]</td>
+                    <td>[{item.total_price}] ฿</td>
                     <td>
-                        [{item.discount}]
+                        [{item.discount}] ฿
                     </td>
                     <td><span class="badge bg-label-primary me-1">Active</span></td>
                     <td>

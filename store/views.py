@@ -41,12 +41,13 @@ def invoice_code():
     return date+"{0:04}".format(int(count.no))
 
 
-def product_code(category):
+def product_code(category, shop):
     models.ProductCategory.objects.filter(
         id=category).update(count=F('count')+1)
     cats = models.ProductCategory.objects.get(id=category)
     count = "{0:04}".format(cats.count)
-    code = f"{cats.id}"+count
+    code = f"{shop.id}{cats.id}"+count
+    
     return code
 
 
@@ -187,7 +188,7 @@ def createInputData(request):
     shop = models.Shop.objects.get(user=user)
     total_discount = 0
     total_price = 0
-    remark = ""
+    remark = request.data['remark']
     invoice_no = invoice_code()
 
     invoice = models.InputInvoice.objects.create(
@@ -198,26 +199,26 @@ def createInputData(request):
 
     # create product and input data
     products = json.loads(request.data['products'])
-    for key, value in products.items():
+    for key, product in products.items():
 
-        total_price += value['total']
-        total_discount += value['discount']
+        total_price += product['total']
+        total_discount += product['discount']
 
-        discount = value['discount']
-        quantity = value['unit']
-        unit_price = value['price']
+        discount = product['discount']
+        quantity = product['unit']
+        unit_price = product['price']
 
-        del value['total']
-        del value['discount']
-        value['shop'] = shop
-        cats = value['category']
+        del product['total']
+        del product['discount']
+        product['shop'] = shop
+        cats = product['category']
         print(cats, type(cats))
 
-        value['category'] = models.ProductCategory.objects.get(
-            id=int(value['category']))
-        value['code'] = product_code(cats)
+        product['category'] = models.ProductCategory.objects.get(
+            id=int(product['category']))
+        product['code'] = product_code(cats, shop)
 
-        product = models.Product.objects.create(**value)
+        product = models.Product.objects.create(**product)
         input_data = models.InputData.objects.create(
             product=product,
             quantity=quantity,

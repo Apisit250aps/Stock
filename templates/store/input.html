@@ -37,7 +37,6 @@
                         </div>
                     </div>
                     <div class="row row-cols-1 mx-auto g-0">
-
                         <div class="col">
                             <div class="mb-3">
                                 <label class="form-label" for="descriptions">Description</label>
@@ -187,6 +186,7 @@
                         total: 0
 
                     },
+                    remark:"",
                     productObject: new Array,
                     onEdit: false,
                     indexSelect: null
@@ -244,7 +244,6 @@
                             unit: 0,
                             cost: 0,
                             price: 0,
-
                         };
                         this.total = computed(() => {
                             return this.product.price * this.product.unit - this.product.discount;
@@ -307,6 +306,7 @@
 
                     form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
                     form_data.append("products", products);
+                    form_data.append("remark", this.remark);
 
                     axios(
                         {
@@ -330,7 +330,6 @@
                                 cost: 0,
                                 price: 0,
                             };
-
                             setTimeout(()=>{
                                 location.reload()
                             }, 1000)
