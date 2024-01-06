@@ -11,7 +11,7 @@
                     <th>invoice no</th>
                     <th>total price</th>
                     <th>discount</th>
-                    <th>remark</th>
+                    <th>type</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -22,7 +22,10 @@
                     <td>
                         [{item.discount}] ฿
                     </td>
-                    <td><span class="badge bg-label-primary me-1">Active</span></td>
+                    <td>
+                        <span v-if="item.type == 1" class="badge bg-label-success me-1">new</span>
+                        <span v-if="item.type == 2" class="badge bg-label-warning me-1">add</span>
+                    </td>
                     <td>
                         <div class="dropdown">
                             <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">

@@ -22,12 +22,17 @@ urlpatterns = [
 
 
     path('get-product-type', views.getProductType, name='get-product-type-api'),
-    path('get-product-category', views.getProductCategory, name='get-product-category-api'),
+    path('get-product-category', views.getProductCategory,
+         name='get-product-category-api'),
 
-
-
-    path('store-product', views.ShopProducts, name='get-store-product-api'),
+    path('store-product', views.shopProducts, name='get-store-product-api'),
     path('store-invoice', views.shopInvoice, name='get-shop-invoice-api'),
 
-    path('create-input-data', views.createInputData, name='create-input-data-api')
+    path('create-input-data', views.createInputData,
+         name='create-input-data-api'),
+    
+    
+    # product api
+    path('add-product', views.addProduct, name='add-product-api'),
+    path('edit-product', views.editProduct, name='edit-product-api')
 ]

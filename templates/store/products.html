@@ -2,7 +2,129 @@
 <!--  -->
 {% block content %}
 <!--  -->
+<div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="addProductLabel">Add Product </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold fs-3" for="add-product-form">P-[{add_product.code }] :
+                        [{add_product.name}]</label>
+                    <div class="input-group input-group-merge">
+                        <span id="add-product-form2" class="input-group-text"><i class="bx bx-package"></i></span>
+                        <input type="number" min="1" id="add-product-form" class="form-control" placeholder=""
+                            aria-label="value" aria-describedby="add-product-form2" v-model="add_product.unit" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="basic-icon-default-message">Remark</label>
+                    <div class="input-group input-group-merge">
+                        <span id="basic-icon-default-message2" class="input-group-text"><i
+                                class="bx bx-comment"></i></span>
+                        <textarea id="basic-icon-default-message" class="form-control"
+                            placeholder="Hi, Do you have a moment to talk Joe?"
+                            aria-label="Hi, Do you have a moment to talk Joe?"
+                            aria-describedby="basic-icon-default-message2" v-model="add_product.remark"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" ref="close-add-modal"
+                    data-bs-dismiss="modal">Close</button>
+                <button type="button" @click="onAdd($event)" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
 
+<div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="editProductLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editProductLabel">Edit Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-1 row-cols-lg-2 mx-auto g-0">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label class="form-label" for="product-name">Product Name</label>
+                            <div class="input-group input-group-merge">
+                                <span id="product-name2" class="input-group-text"><i class="bx bx-package"></i></span>
+                                <input type="text" class="form-control" id="product-name" placeholder=""
+                                    aria-label="Product" aria-describedby="product-name2" v-model="edit_product.name" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label for="cetegory" class="form-label">Category</label>
+                            <select id="cetegory" class="form-select" v-model="edit_product.category">
+                                <option v-for="(item, index) in category_list" :key="index" :value="item.id">
+                                    [{item.name}]</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row row-cols-1 mx-auto g-0">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label class="form-label" for="descriptions">Description</label>
+                            <div class="input-group input-group-merge">
+                                <span id="descriptions" class="input-group-text"><i class="bx bx-comment"></i></span>
+                                <textarea id="descriptions" class="form-control" placeholder="Tell about this product"
+                                    aria-label="Hi, Do you have a moment to talk Joe?" aria-describedby="descriptions"
+                                    v-model="edit_product.desc"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-cols-1 row-cols-lg-3 mx-auto g-0">
+                    <div class="col">
+                        <div class="mb-3">
+                            <label class="form-label" for="price">Price</label>
+                            <div class="input-group input-group-merge">
+                                <span id="price" class="input-group-text"><i class="bx bx-money"></i></span>
+                                <input type="number" min="0" id="price" class="form-control" placeholder=" .฿"
+                                    aria-label=" .฿" aria-describedby="price" v-model="edit_product.price" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="mb-3">
+                            <label class="form-label" for="cost">Cost</label>
+                            <div class="input-group input-group-merge">
+                                <span id="cost2" class="input-group-text"><i class="bx bx-coin"></i></span>
+                                <input type="number" min="0" id="cost" class="form-control" placeholder=" .฿"
+                                    aria-label=" .฿" aria-describedby="cost2" v-model="edit_product.cost" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="mb-3">
+                            <label class="form-label" for="total">Total</label>
+                            <div class="input-group input-group-merge">
+                                <span id="total2" class="input-group-text"><i class="bx bx-coin-stack"></i></span>
+                                <input type="number" min="0" id="total" class="form-control" placeholder=" .฿"
+                                    aria-label=" .฿" aria-describedby="total2" v-model="edit_product.total" disabled />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary"
+                    data-bs-dismiss="modal">Close</button>
+                <button type="button" @click="onEdit($event)" class="btn btn-primary">Add</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 
 <div class="card h-100">
@@ -36,7 +158,12 @@
                                 <i class="bx bx-dots-vertical-rounded"></i>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-edit-alt me-1"></i>
+                                <a class="dropdown-item" href="javascript:void(0);" @click="setToAdd(index)"
+                                    data-bs-toggle="modal" data-bs-target="#addProduct"><i class="bx bx-plus me-1"></i>
+                                    Add</a>
+                                <a class="dropdown-item" href="javascript:void(0);" @click="setEdit(index)"
+                                    data-bs-toggle="modal" data-bs-target="#editProduct"><i
+                                        class="bx bx-edit-alt me-1"></i>
                                     Edit</a>
                                 <a class="dropdown-item" href="javascript:void(0);"><i class="bx bx-trash me-1"></i>
                                     Delete</a>
@@ -52,7 +179,7 @@
 <!--  -->
 {% block script %}
 <script>
-    const { createApp } = Vue;
+    const { createApp, computed } = Vue;
     const app = createApp(
         {
             delimiters: ["[{", "}]"],
@@ -60,10 +187,39 @@
                 return {
                     layout: "store",
                     page: "products",
-                    products: null
+                    products: null,
+                    add_product: {
+                        id: "",
+                        name: "",
+                        code: "",
+                        unit: 1,
+                        remark: ""
+                    },
+                    edit_product: {
+                        id: null,
+                        name: "",
+                        category: "",
+                        desc: "",
+                        cost: 0,
+                        price: 0,
+                        total: computed(() => {
+                            return this.edit_product.price - this.edit_product.cost;
+                        })
+                    },
+                    category_list: []
                 };
             },
             async mounted() {
+                
+                axios(
+                    {
+                        method: 'get',
+                        url: "{% url 'get-product-category-api' %}"
+                    }
+                ).then((response) => {
+                    this.category_list = response.data;
+                });
+
 
                 await axios(
                     {
@@ -73,6 +229,80 @@
                 ).then((response) => {
                     this.products = response.data;
                 });
+            },
+            methods: {
+                onAdd(e) {
+                    e.preventDefault();
+                    this.$refs['close-add-modal'].click();
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                    form_data.append("id", this.add_product.id);
+                    form_data.append("unit", this.add_product.unit);
+                    form_data.append("remark", this.add_product.remark);
+
+                    axios(
+                        {
+                            method: "post",
+                            url: "{% url 'add-product-api' %}",
+                            data: form_data
+                        }
+                    ).then(async (response) => {
+                        if (response.status = 201) {
+
+                            Swal.fire({
+                                title: "Success!",
+                                text: "Add product success",
+                                icon: "success"
+                            });
+                            setTimeout(() => {
+                                axios(
+                                    {
+                                        method: "get",
+                                        url: "{% url 'get-store-product-api' %}"
+                                    }
+                                ).then((response) => {
+                                    this.products = response.data;
+                                });
+
+
+                            }, 1000);
+
+                        }
+                    });
+                },
+                setToAdd(index) {
+                    this.add_product.id = this.products[index].id;
+                    this.add_product.code = this.products[index].code;
+                    this.add_product.name = this.products[index].name;
+
+
+                },
+                setEdit(index) {
+                    this.edit_product.id = this.products[index].id;
+                    this.edit_product.name = this.products[index].name;
+                    this.edit_product.category = this.products[index].category.id;
+                    this.edit_product.desc = this.products[index].desc;
+                    this.edit_product.cost = this.products[index].cost;
+                    this.edit_product.price = this.products[index].price;
+                },
+                onEdit(e) {
+                    e.preventDefault();
+                    const product = JSON.stringify(Object.assign({}, this.edit_product));
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                    form_data.append("product", product);
+
+                    axios(
+                        {
+                            method: "post",
+                            url: "{% url 'edit-product-api' %}",
+                            data: form_data
+                        }
+                    ).then((response) => {
+                        console.log(response.data);
+                    });
+                }
+
 
             }
         }

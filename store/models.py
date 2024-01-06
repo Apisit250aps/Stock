@@ -4,6 +4,10 @@ from django.contrib.auth.models import User
 import random as rd 
 # Create your models here.
 
+INVOICE_TYPE = (
+    (1, "create"),
+    (2, "update")
+)
 class ProductType(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
@@ -107,6 +111,7 @@ class InputInvoice(models.Model):
     invoice_no = models.CharField(max_length=16, unique=True, null=True)
     total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True)
     discount = models.DecimalField(max_digits=9, decimal_places=2, null=True)
+    type=models.IntegerField(choices=INVOICE_TYPE, default=1)
     remark = models.TextField(blank=True, null=True)
     # timestamp 
     created_at = models.DateTimeField(auto_now_add=True)

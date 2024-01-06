@@ -54,7 +54,7 @@
     <link rel="stylesheet" href="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}" />
 
     <link rel="stylesheet" href="{% static 'assets/vendor/libs/apex-charts/apex-charts.css' %}" />
-
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <!-- Page CSS -->
 
     <!-- Helpers -->
@@ -404,6 +404,8 @@
                 <div class="nav-item d-flex align-items-center">
                   <i class="bx bx-search fs-4 lh-0"></i>
                   <input
+                  ref="search-input"
+                  value=""
                     type="text"
                     class="form-control border-0 shadow-none"
                     placeholder="Search..."
@@ -544,14 +546,15 @@
     </div>
     <!-- / Layout wrapper -->
 
+
     {% block script %}
       
     {% endblock script %}
-
+    
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/core.js -->
     <script>
-        document.getElementById('year-display').innerText = `©${new Date().getFullYear()}, made with ❤️ by `
+      document.getElementById('year-display').innerText = `©${new Date().getFullYear()}, made with ❤️ by `
     </script>
     <script src="{% static 'assets/vendor/libs/jquery/jquery.js' %}"></script>
     <script src="{% static 'assets/vendor/libs/popper/popper.js' %}"></script>

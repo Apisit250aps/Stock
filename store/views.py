@@ -47,7 +47,7 @@ def product_code(category, shop):
     cats = models.ProductCategory.objects.get(id=category)
     count = "{0:04}".format(cats.count)
     code = f"{shop.id}{cats.id}"+count
-    
+
     return code
 
 
@@ -234,6 +234,50 @@ def createInputData(request):
 
 
 @csrf_exempt
+@api_view(["POST", ])
+@permission_classes((IsAuthenticated,))
+def addProduct(request):
+    http_status = status.HTTP_200_OK
+    
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+    total_discount = 0
+    invoice_no = invoice_code()
+
+    id = int(request.data['id'])
+    unit = int(request.data['unit'])
+    remark = request.data['remark']
+    
+    update = models.Product.objects.filter(id=id).update(unit=F("unit")+unit)
+    if update :
+        product = models.Product.objects.get(id=id)
+    
+    invoice = models.InputInvoice.objects.create(
+        shop=shop,
+        invoice_no=invoice_no,
+        total_price=(unit*product.price),
+        discount=total_discount,
+        remark=remark,
+        type=2
+    )
+    
+    input_data = models.InputData.objects.create(
+        invoice=invoice,
+        product=product,
+        quantity=unit,
+        unit_price=product.price,
+        discount=0
+        
+    )
+    
+    if input_data:
+        http_status = status.HTTP_201_CREATED
+    
+    
+    return Response(status=http_status)
+
+
+@csrf_exempt
 @api_view(["GET", ])
 @permission_classes((AllowAny,))
 def shopInvoice(request):
@@ -251,13 +295,38 @@ def shopInvoice(request):
 @csrf_exempt
 @api_view(["GET", ])
 @permission_classes((IsAuthenticated,))
-def ShopProducts(request):
+def shopProducts(request):
     http_status = status.HTTP_200_OK
 
     user = User.objects.get(username=request.user.username)
     shop = models.Shop.objects.get(user=user)
 
-    productQuery = models.Product.objects.filter(shop=shop).order_by('-updated_at')
+    productQuery = models.Product.objects.filter(
+        shop=shop).order_by('-updated_at')
     productSerializers = serializers.ProductSerializer(productQuery, many=True)
+    
+    productData = []
+    
+    for product in productSerializers.data:
+        product = dict(product)
+        product_cats = models.ProductCategory.objects.get(id=int(product['category']))
+        cats = serializers.ProductCategorySerializer(product_cats).data
+        product['category'] = cats
+        productData.append(product)
+        
+        
 
-    return Response(status=http_status, data=productSerializers.data)
+    return Response(status=http_status, data=productData)
+
+# Product Methods
+
+@csrf_exempt
+@api_view(["POST", ])
+@permission_classes((IsAuthenticated,))
+def editProduct(request):
+    edit = request.data['product']
+    product = json.loads(edit)
+    del product['total']
+    models.Product.objects.filter(id=int(product['id'])).update(**product)
+ 
+    return Response(status=200)
