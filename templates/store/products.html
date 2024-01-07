@@ -118,7 +118,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary"
+                <button type="button" class="btn btn-secondary" ref="close-edit-modal"
                     data-bs-dismiss="modal">Close</button>
                 <button type="button" @click="onEdit($event)" class="btn btn-primary">Add</button>
             </div>
@@ -210,7 +210,7 @@
                 };
             },
             async mounted() {
-                
+
                 axios(
                     {
                         method: 'get',
@@ -248,6 +248,13 @@
                         }
                     ).then(async (response) => {
                         if (response.status = 201) {
+                            this.add_product = {
+                                id: "",
+                                name: "",
+                                code: "",
+                                unit: 1,
+                                remark: ""
+                            }
 
                             Swal.fire({
                                 title: "Success!",
@@ -264,11 +271,23 @@
                                     this.products = response.data;
                                 });
 
-
                             }, 1000);
 
                         }
-                    });
+                        else if (response.status == 400) {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Something is error!",
+                                icon: "error"
+                            });
+                        }
+                    }).catch((err)=>{
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Something is error!",
+                            icon: "error"
+                        });
+                    })
                 },
                 setToAdd(index) {
                     this.add_product.id = this.products[index].id;
@@ -287,6 +306,7 @@
                 },
                 onEdit(e) {
                     e.preventDefault();
+                    this.$refs['close-edit-modal'].click();
                     const product = JSON.stringify(Object.assign({}, this.edit_product));
                     const form_data = new FormData;
                     form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
@@ -299,7 +319,43 @@
                             data: form_data
                         }
                     ).then((response) => {
-                        console.log(response.data);
+                        if (response.status == 200) {
+                            this.edit_product = {
+                                id: null,
+                                name: "",
+                                category: "",
+                                desc: "",
+                                cost: 0,
+                                price: 0,
+                                total: computed(() => {
+                                    return this.edit_product.price - this.edit_product.cost;
+                                })
+                            };
+                            Swal.fire({
+                                title: "Success!",
+                                text: "Product edited!",
+                                icon: "success"
+                            });
+                            setTimeout(() => {
+                                axios(
+                                    {
+                                        method: "get",
+                                        url: "{% url 'get-store-product-api' %}"
+                                    }
+                                ).then((response) => {
+                                    this.products = response.data;
+                                });
+
+                            }, 1000);
+
+                        }
+                        else {
+                            Swal.fire({
+                                title: "Error!",
+                                text: "Something is error!",
+                                icon: "error"
+                            });
+                        }
                     });
                 }
 

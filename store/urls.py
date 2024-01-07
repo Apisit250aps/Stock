@@ -27,7 +27,7 @@ urlpatterns = [
 
     path('store-product', views.shopProducts, name='get-store-product-api'),
     path('store-invoice', views.shopInvoice, name='get-shop-invoice-api'),
-
+    path('store-filter-invoice', views.shopFilterInvoice, name='filter-shop-invoice-api'),
     path('create-input-data', views.createInputData,
          name='create-input-data-api'),
     

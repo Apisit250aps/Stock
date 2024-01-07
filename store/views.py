@@ -19,6 +19,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Q, F
 
 from datetime import datetime
+from datetime import timedelta
 import json
 import random
 
@@ -234,50 +235,6 @@ def createInputData(request):
 
 
 @csrf_exempt
-@api_view(["POST", ])
-@permission_classes((IsAuthenticated,))
-def addProduct(request):
-    http_status = status.HTTP_200_OK
-    
-    user = User.objects.get(username=request.user.username)
-    shop = models.Shop.objects.get(user=user)
-    total_discount = 0
-    invoice_no = invoice_code()
-
-    id = int(request.data['id'])
-    unit = int(request.data['unit'])
-    remark = request.data['remark']
-    
-    update = models.Product.objects.filter(id=id).update(unit=F("unit")+unit)
-    if update :
-        product = models.Product.objects.get(id=id)
-    
-    invoice = models.InputInvoice.objects.create(
-        shop=shop,
-        invoice_no=invoice_no,
-        total_price=(unit*product.price),
-        discount=total_discount,
-        remark=remark,
-        type=2
-    )
-    
-    input_data = models.InputData.objects.create(
-        invoice=invoice,
-        product=product,
-        quantity=unit,
-        unit_price=product.price,
-        discount=0
-        
-    )
-    
-    if input_data:
-        http_status = status.HTTP_201_CREATED
-    
-    
-    return Response(status=http_status)
-
-
-@csrf_exempt
 @api_view(["GET", ])
 @permission_classes((AllowAny,))
 def shopInvoice(request):
@@ -304,29 +261,119 @@ def shopProducts(request):
     productQuery = models.Product.objects.filter(
         shop=shop).order_by('-updated_at')
     productSerializers = serializers.ProductSerializer(productQuery, many=True)
-    
+
     productData = []
-    
+
     for product in productSerializers.data:
         product = dict(product)
-        product_cats = models.ProductCategory.objects.get(id=int(product['category']))
+        product_cats = models.ProductCategory.objects.get(
+            id=int(product['category']))
         cats = serializers.ProductCategorySerializer(product_cats).data
         product['category'] = cats
         productData.append(product)
-        
-        
 
     return Response(status=http_status, data=productData)
 
 # Product Methods
 
+
 @csrf_exempt
 @api_view(["POST", ])
 @permission_classes((IsAuthenticated,))
 def editProduct(request):
+    http_status = status.HTTP_200_OK
     edit = request.data['product']
     product = json.loads(edit)
     del product['total']
+
     models.Product.objects.filter(id=int(product['id'])).update(**product)
- 
-    return Response(status=200)
+
+    return Response(status=http_status)
+
+
+@csrf_exempt
+@api_view(["POST", ])
+@permission_classes((IsAuthenticated,))
+def addProduct(request):
+    http_status = status.HTTP_200_OK
+
+    
+
+    id = int(request.data['id'])
+    unit = int(request.data['unit'])
+    remark = request.data['remark']
+    
+    if unit <= 0:
+        http_status = status.HTTP_400_BAD_REQUEST
+
+    else :
+        user = User.objects.get(username=request.user.username)
+        shop = models.Shop.objects.get(user=user)
+        total_discount = 0
+        invoice_no = invoice_code()
+        
+        update = models.Product.objects.filter(id=id).update(unit=F("unit")+unit)
+        if update:
+            product = models.Product.objects.get(id=id)
+
+        invoice = models.InputInvoice.objects.create(
+            shop=shop,
+            invoice_no=invoice_no,
+            total_price=(unit*product.price),
+            discount=total_discount,
+            remark=remark,
+            type=2
+        )
+
+        input_data = models.InputData.objects.create(
+            invoice=invoice,
+            product=product,
+            quantity=unit,
+            unit_price=product.price,
+            discount=0
+
+        )
+
+        if input_data:
+            http_status = status.HTTP_201_CREATED
+
+    return Response(status=http_status)
+
+
+@csrf_exempt
+@api_view(["POST", ])
+@permission_classes((IsAuthenticated,))
+def shopFilterInvoice(request):
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+    from_date = request.data['from']
+    to_date = request.data['to']
+    if from_date == "" and to_date == "":
+        invoiceQuery = models.InputInvoice.objects.filter(
+            shop=shop).order_by('-updated_at')
+    elif from_date != "" and to_date == "":
+        
+        from_date  = datetime.strptime(from_date, '%Y-%m-%d')
+        from_date = str(from_date).split(" ")[0]
+        print(from_date)
+        to_date = datetime.now() + timedelta(days=1)
+        to_date = str(to_date).split(" ")[0]
+        print(to_date)
+        invoiceQuery = models.InputInvoice.objects.filter(
+            shop=shop, created_at__range=(from_date, to_date)).order_by('-updated_at')
+    else :
+        from_date  = datetime.strptime(from_date, '%Y-%m-%d')
+        from_date = str(from_date).split(" ")[0]
+        
+        to_date = datetime.strptime(to_date, '%Y-%m-%d') + timedelta(days=1)
+        to_date = str(to_date).split(" ")[0]
+        from_date
+        print(from_date)
+        print(to_date)
+        invoiceQuery = models.InputInvoice.objects.filter(
+            shop=shop, created_at__range=(from_date, to_date)).order_by('-updated_at')
+        
+        
+    invoiceSerializer = serializers.InputInvoiceSerializer(
+        invoiceQuery, many=True)
+    return Response(status=status.HTTP_200_OK, data=invoiceSerializer.data)
