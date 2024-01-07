@@ -2,8 +2,85 @@
 <!--  -->
 {% block content %}
 <!--  -->
-<!-- Button trigger modal -->
 
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#infoModal" hidden
+    ref="invoice-info">
+    Launch demo modal
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="infoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title " id="infoModalLabel">Invoice</h3>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <hr>
+                <div class="row mx-auto g-0">
+                    <div class="col-8">
+                        <h3 class="">[{invoiceSelect.shop.name}]</h3>
+                        <h5>
+                            <span>[{invoiceSelect.shop.address}], </span>
+                            <span>ต. [{invoiceSelect.shop.sub_district}], </span>
+                            <span>อ. [{invoiceSelect.shop.district}], </span>
+                            <span>จ. [{invoiceSelect.shop.province}], </span>
+                            <span> 33240 </span>
+                        </h5>  
+                        <h5>
+                            <span> [{invoiceSelect.shop.tel}], </span>
+                        </h5>    
+                        <h5>
+                            <span> [{invoiceSelect.shop.fex}], </span>
+                        </h5>                
+                    </div>
+                    <div class="col-4">
+                        <h3 class="text-end">INV-[{invoiceSelect.invoice_no}]</h3>
+                        <h5 class="text-end">
+                            
+                            <span>[{new Date(invoiceSelect.shop.created_at).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}], </span>
+                            
+                        </h5>  
+                    </div>
+                </div>
+                <div class="row mx-auto g-0">
+                    <div class="col-12">
+                        <table class="table table-borderless table-condensed">
+                            <thead>
+                                <th>code</th>
+                                <th>name</th>
+                                <th>price</th>
+                                <th>unit</th>
+                                <th>cost</th>
+                                <th>discount</th>
+                                <th>total</th>
+                            </thead>
+                            <tbody>
+                                
+                                <tr v-for="(item, index) of invoiceSelect.input_data" :key="index">
+                                    <td>P-[{item.product.code}]</td>
+                                    <td>[{item.product.name}] ฿</td>
+                                    <td>[{item.product.price}] ฿</td>
+                                    <td>[{item.product.unit}] ฿</td>
+                                    <td>[{item.product.cost}] ฿</td>
+                                    <td>[{item.discount}] ฿</td>
+                                    <td>[{(item.product.unit-item.product.cost)*item.product.unit}] ฿</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <!-- Modal -->
 <div class="modal fade" id="filter" tabindex="-1" aria-labelledby="filterLabel" aria-hidden="true">
@@ -15,26 +92,33 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
+                    <label for="cetegory" class="form-label">Category</label>
+                    <select id="cetegory" class="form-select" v-model="filter.type">
+                        <option value="0">All</option>
+                        <option value="1">New</option>
+                        <option value="2">Add</option>
+                    </select>
+                </div>
+                <div class="mb-3">
                     <label class="form-label" for="from-date">From</label>
                     <div class="input-group input-group-merge">
-                        <span id="from-date2" class="input-group-text"><i
-                                class="bx bx-calendar"></i></span>
+                        <span id="from-date2" class="input-group-text"><i class="bx bx-calendar"></i></span>
                         <input type="date" class="form-control" id="from-date" placeholder="John Doe"
-                            aria-label="John Doe" aria-describedby="from-date2" v-model="filter.from_date"/>
+                            aria-label="John Doe" aria-describedby="from-date2" v-model="filter.from_date" />
                     </div>
                 </div>
                 <div class="mb-3">
                     <label class="form-label" for="to-date">To</label>
                     <div class="input-group input-group-merge">
-                        <span id="to-date2" class="input-group-text"><i
-                                class="bx bx-calendar"></i></span>
+                        <span id="to-date2" class="input-group-text"><i class="bx bx-calendar"></i></span>
                         <input type="date" class="form-control" id="to-date" placeholder="John Doe"
-                            aria-label="John Doe" aria-describedby="to-date2"  v-model="filter.to_date"/>
+                            aria-label="John Doe" aria-describedby="to-date2" v-model="filter.to_date" />
                     </div>
                 </div>
+
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" @click="clearFilter()" class="btn btn-secondary">Clear filter</button>
                 <button type="submit" @click="onFilter($event)" class="btn btn-primary">Search</button>
             </div>
         </form>
@@ -45,13 +129,12 @@
 <div class="card h-100">
     <div class="d-flex align-items-center justify-content-between card-header">
         <h1 class="">
-            Invoices
+            Invoices [{invoiceSelect.id}]
         </h1>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filter">
             <i class="bx bx-filter-alt"></i>
         </button>
     </div>
-
     <div class="table-responsive text-nowrap overflow-y-scroll">
         <table class="table table-borderless table-hover">
             <thead>
@@ -64,7 +147,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(item, index) in invoices" :key="index">
+                <tr v-for="(item, index) in invoices" :key="index" @click="setInfo(index)">
                     <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>INV-[{item.invoice_no}]</strong>
                     </td>
                     <td>[{item.total_price}] ฿</td>
@@ -72,8 +155,7 @@
                         [{item.discount}] ฿
                     </td>
                     <td>
-                        <span v-if="item.type == 1" class="badge bg-label-success me-1">new</span>
-                        <span v-if="item.type == 2" class="badge bg-label-warning me-1">add</span>
+                        <span class="badge bg-label-dark me-1">[{item.type}]</span>
                     </td>
                     <td>
                         <div class="dropdown">
@@ -106,10 +188,82 @@
                     layout: "store",
                     page: "invoices",
                     invoices: null,
-                    filter:{
-                        from_date:"",
-                        to_date:"",
-                    }
+                    filter: {
+                        from_date: "",
+                        to_date: "",
+                        type: 0,
+                    },
+                    invoiceSelect: {
+                        "id": 92,
+                        "invoice_no": "202401070012",
+                        "total_price": "100.00",
+                        "discount": "0.00",
+                        "type": "add",
+                        "remark": "",
+                        "created_at": "2024-01-07T10:39:55.557593+07:00",
+                        "updated_at": "2024-01-07T10:39:55.557593+07:00",
+                        "shop": {
+                            "id": 2,
+                            "name": "Apisit Saithong",
+                            "code": "412110",
+                            "contact": "อภิสิทธิ์ สายทอง",
+                            "tel": "0610575203",
+                            "fax": "0236598569",
+                            "email": "aps.apisit250@gmail.com",
+                            "remark": "-",
+                            "province": "ศรีสะเกษ",
+                            "district": "ศรีรัตนะ",
+                            "sub_district": "เสื่องข้าว",
+                            "address": "111/6",
+                            "created_at": "2024-01-04T21:29:40.834419+07:00",
+                            "updated_at": "2024-01-04T21:29:40.834419+07:00",
+                            "user": 1,
+                            "area": 1,
+                            "product_type": 1
+                        },
+                        "input_data": [
+                            {
+                                "id": 53,
+                                "quantity": 1,
+                                "unit_price": "100.00",
+                                "discount": "0.00",
+                                "created_at": "2024-01-07T10:39:55.559601+07:00",
+                                "updated_at": "2024-01-07T10:39:55.559601+07:00",
+                                "invoice": 92,
+                                "product": {
+                                    "id": 27,
+                                    "code": "210016",
+                                    "name": "มะม่วง ร่วงแล้ว",
+                                    "desc": "กด",
+                                    "unit": 631,
+                                    "cost": "49.00",
+                                    "price": "100.00",
+                                    "created_at": "2024-01-06T12:43:57.196742+07:00",
+                                    "updated_at": "2024-01-06T12:43:57.196742+07:00",
+                                    "shop": {
+                                        "id": 2,
+                                        "name": "Apisit Saithong",
+                                        "code": "412110",
+                                        "contact": "อภิสิทธิ์ สายทอง",
+                                        "tel": "0610575203",
+                                        "fax": "0236598569",
+                                        "email": "aps.apisit250@gmail.com",
+                                        "remark": "-",
+                                        "province": "ศรีสะเกษ",
+                                        "district": "ศรีรัตนะ",
+                                        "sub_district": "เสื่องข้าว",
+                                        "address": "111/6",
+                                        "created_at": "2024-01-04T21:29:40.834419+07:00",
+                                        "updated_at": "2024-01-04T21:29:40.834419+07:00",
+                                        "user": 1,
+                                        "area": 1,
+                                        "product_type": 1
+                                    },
+                                    "category": "coffee"
+                                }
+                            }
+                        ]
+                    },
                 };
             },
             async mounted() {
@@ -122,37 +276,49 @@
                     this.invoices = response.data;
                 });
             },
-            methods:{
-                onFilter(e){
-                    e.preventDefault()
-                    let isValid = true
-                    if(this.filter.from_date != ""){
-                        
-                        if (this.filter.to_date != ""){
-                            
-                            if (this.filter.to_date < this.filter.from_date){
-                                isValid = false
-                                console.log(isValid)
+            methods: {
+                setInfo(index) {
+                    this.invoiceSelect = this.invoices[index];
+                    this.$refs['invoice-info'].click();
+                },
+                clearFilter() {
+                    this.filter = {
+                        from_date: "",
+                        to_date: "",
+                        type: 0,
+                    };
+                },
+                onFilter(e) {
+                    e.preventDefault();
+                    let isValid = true;
+                    if (this.filter.from_date != "") {
+
+                        if (this.filter.to_date != "") {
+
+                            if (this.filter.to_date < this.filter.from_date) {
+                                isValid = false;
+                                console.log(isValid);
                             }
-                            
+
                         }
                     }
-                    if (isValid){
+                    if (isValid) {
                         const form_data = new FormData;
-                        form_data.append("csrfmiddlewaretoken", "{{csrf_token}}")
-                        form_data.append("from", this.filter.from_date)
-                        form_data.append("to", this.filter.to_date)
+                        form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                        form_data.append("from", this.filter.from_date);
+                        form_data.append("to", this.filter.to_date);
+                        form_data.append("type", this.filter.type);
 
                         axios(
                             {
-                                method:"post",
-                                url:"{% url 'filter-shop-invoice-api' %}",
-                                data:form_data
+                                method: "post",
+                                url: "{% url 'filter-shop-invoice-api' %}",
+                                data: form_data
                             }
-                        ).then((response)=>{
-                            console.log(response.status)
+                        ).then((response) => {
+                            console.log(response.status);
                             this.invoices = response.data;
-                        })
+                        });
                     }
 
                 }

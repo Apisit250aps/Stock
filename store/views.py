@@ -24,6 +24,9 @@ import json
 import random
 
 from . import models
+from .models import (
+    INVOICE_TYPE,
+)
 from . import serializers
 
 # Create your views here.
@@ -50,6 +53,43 @@ def product_code(category, shop):
     code = f"{shop.id}{cats.id}"+count
 
     return code
+
+
+def choiceMap(choice, map):
+    for i in choice:
+        if i[0] == map:
+            return i[1]
+
+
+def inputInvoiceData(invoiceSerializer):
+    InvoiceData = []
+
+    for inv in invoiceSerializer.data:
+        invoice = int(inv['id'])
+        inv['shop'] = serializers.ShopSerializer(models.Shop.objects.get(id=int(inv['shop']))).data
+
+        inv['type'] = choiceMap(INVOICE_TYPE, inv['type'])
+
+        inputDataQuery = models.InputData.objects.filter(invoice=invoice)
+        inputDataSerializer = serializers.InputDataSerializer(
+            inputDataQuery, many=True)
+
+        inputDataData = []
+        for inp in inputDataSerializer.data:
+            product = int(inp['product'])
+            productQuery = models.Product.objects.get(id=product)
+            productSerializer = serializers.ProductSerializer(productQuery)
+            inp['product'] = productSerializer.data
+            cats = inp['product']['category']
+            inp['product']['category'] = models.ProductCategory.objects.get(
+                id=cats).name
+            inp['product']['shop'] = inv['shop']
+            inputDataData.append(inp)
+        inv['input_data'] = inputDataData
+
+        InvoiceData.append(inv)
+
+    return InvoiceData
 
 
 @csrf_exempt
@@ -246,7 +286,9 @@ def shopInvoice(request):
     invoiceSerializer = serializers.InputInvoiceSerializer(
         invoiceQuery, many=True)
 
-    return Response(status=status.HTTP_200_OK, data=invoiceSerializer.data)
+    InvoiceData = inputInvoiceData(invoiceSerializer)
+
+    return Response(status=status.HTTP_200_OK, data=InvoiceData)
 
 
 @csrf_exempt
@@ -297,22 +339,21 @@ def editProduct(request):
 def addProduct(request):
     http_status = status.HTTP_200_OK
 
-    
-
     id = int(request.data['id'])
     unit = int(request.data['unit'])
     remark = request.data['remark']
-    
+
     if unit <= 0:
         http_status = status.HTTP_400_BAD_REQUEST
 
-    else :
+    else:
         user = User.objects.get(username=request.user.username)
         shop = models.Shop.objects.get(user=user)
         total_discount = 0
         invoice_no = invoice_code()
-        
-        update = models.Product.objects.filter(id=id).update(unit=F("unit")+unit)
+
+        update = models.Product.objects.filter(
+            id=id).update(unit=F("unit")+unit)
         if update:
             product = models.Product.objects.get(id=id)
 
@@ -344,36 +385,45 @@ def addProduct(request):
 @api_view(["POST", ])
 @permission_classes((IsAuthenticated,))
 def shopFilterInvoice(request):
+
     user = User.objects.get(username=request.user.username)
     shop = models.Shop.objects.get(user=user)
+    type = int(request.data['type'])
+    
     from_date = request.data['from']
     to_date = request.data['to']
-    if from_date == "" and to_date == "":
-        invoiceQuery = models.InputInvoice.objects.filter(
-            shop=shop).order_by('-updated_at')
-    elif from_date != "" and to_date == "":
-        
-        from_date  = datetime.strptime(from_date, '%Y-%m-%d')
-        from_date = str(from_date).split(" ")[0]
-        print(from_date)
-        to_date = datetime.now() + timedelta(days=1)
-        to_date = str(to_date).split(" ")[0]
-        print(to_date)
-        invoiceQuery = models.InputInvoice.objects.filter(
-            shop=shop, created_at__range=(from_date, to_date)).order_by('-updated_at')
-    else :
-        from_date  = datetime.strptime(from_date, '%Y-%m-%d')
-        from_date = str(from_date).split(" ")[0]
-        
+    filters = {}
+    filters['shop'] = shop
+
+    if type != 0:
+        filters['type'] = type
+
+
+    if from_date == "" and to_date != "":
+        filters['shop'] = shop
+        # print(to_date)
+        # from_date = datetime.strptime("2000-01-01", '%Y-%m-%d')
+        # from_date = str(from_date).split(" ")[0]
         to_date = datetime.strptime(to_date, '%Y-%m-%d') + timedelta(days=1)
         to_date = str(to_date).split(" ")[0]
-        from_date
-        print(from_date)
-        print(to_date)
-        invoiceQuery = models.InputInvoice.objects.filter(
-            shop=shop, created_at__range=(from_date, to_date)).order_by('-updated_at')
+        filters['created_at__range'] = ("2000-01-01", to_date)
+
+    elif from_date != "" and to_date == "":
+
+        from_date = datetime.strptime(from_date, '%Y-%m-%d')
+        from_date = str(from_date).split(" ")[0]
+        to_date = datetime.now() + timedelta(days=1)
+        to_date = str(to_date).split(" ")[0]
         
-        
+        filters['created_at__range'] = (from_date, to_date)
+
+
+    
+    invoiceQuery = models.InputInvoice.objects.filter(**filters).order_by('-updated_at')
+    
     invoiceSerializer = serializers.InputInvoiceSerializer(
         invoiceQuery, many=True)
-    return Response(status=status.HTTP_200_OK, data=invoiceSerializer.data)
+
+    InvoiceData = inputInvoiceData(invoiceSerializer)
+
+    return Response(status=status.HTTP_200_OK, data=InvoiceData)

@@ -5,8 +5,8 @@ import random as rd
 # Create your models here.
 
 INVOICE_TYPE = (
-    (1, "create"),
-    (2, "update")
+    (1, "new"),
+    (2, "add")
 )
 class ProductType(models.Model):
     # property

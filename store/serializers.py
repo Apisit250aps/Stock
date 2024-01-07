@@ -27,3 +27,8 @@ class InputDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.InputData
         fields = "__all__"
+
+class ShopSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Shop
+        fields = "__all__"
