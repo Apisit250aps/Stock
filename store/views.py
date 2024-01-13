@@ -192,7 +192,23 @@ def getArea(request):
     return Response(
         serializers.AreaSerializer(models.Area.objects.all(), many=True).data
     )
+
+
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((AllowAny,))
+def shopData(request):
+    user = User.objects.get(username=request.user.username)
+    http_status = status.HTTP_200_OK
+    try :
+        models.Shop.objects.get(user=user)
     
+    except:
+        http_status = status.HTTP_204_NO_CONTENT
+    
+    
+    return Response(status=http_status)
+
 
 @csrf_exempt
 @api_view(["POST", ])

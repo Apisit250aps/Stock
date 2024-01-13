@@ -24,7 +24,7 @@ urlpatterns = [
     
     
     path('account/setting', views.accountSettingPage, name='account-setting-page'),
-    path('account/shop', views.shopPage, name='account-shop-page'),
+    path('account/shop', views.shopCreatePage, name='account-shop-page'),
     
     path('auth-login/', views.loginPage, name='login-page'),
     path('auth-register/', views.registerPage, name='register-page'),
@@ -38,4 +38,5 @@ urlpatterns = [
     path('store/products', views.productsPage, name='products-page'),
     path('store/invoices', views.invoicesPage, name='invoices-page'),
     path('store/input', views.inputPage, name='input-page'),
+    path('store/shop', views.shopPage, name='shop-page'),
 ]

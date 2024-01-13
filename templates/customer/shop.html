@@ -118,7 +118,7 @@
 
         <div class="card">
             <h5 class="card-header">Shop</h5>
-            <div class="card-body">
+            <div class="card-body" v-if="!hasShop">
                 <div class="mb-3 col-12 mb-0">
                     <div class="alert alert-warning">
                         <h6 class="alert-heading fw-bold mb-1">Are you sure you want to delete your account?</h6>
@@ -136,6 +136,10 @@
                         class="btn btn-danger deactivate-account">Deactivate Account</button>
                 </form>
             </div>
+            <div class="card-body" v-if="hasShop">
+                <a href="{% url 'shop-page' %}">Shop</a>
+            </div>
+
         </div>
     </div>
 
@@ -173,7 +177,9 @@
 
                     province_list: [],
                     district_list: [],
-                    tambon_list: []
+                    tambon_list: [],
+
+                    hasShop:false,
 
 
 
@@ -181,6 +187,21 @@
                 };
             },
             mounted() {
+                axios(
+                    {
+                        method:"get",
+                        url:"{% url 'shop-data' %}"
+                    }
+                ).then((response)=>{
+                    if (response.status == 200){
+                        this.hasShop = true
+                    }
+                    else {
+                        this.hasShop = false
+                    }
+
+                })
+
                 axios(
                     {
                         method: 'get',

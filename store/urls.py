@@ -21,6 +21,8 @@ urlpatterns = [
     path('auth-login', views.loginUser, name='login-api'),
     path('auth-register', views.registerUser, name='register-api'),
 
+    path('shop-data', views.shopData, name='shop-data'),
+    
 
     path('get-product-type', views.getProductType, name='get-product-type-api'),
     path('get-area', views.getArea, name='get-area-api'),

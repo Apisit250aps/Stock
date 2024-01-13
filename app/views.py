@@ -19,7 +19,7 @@ def indexPage(request):
     return render(request, 'customer/index.html')
 
 @login_required()
-def shopPage(request):
+def shopCreatePage(request):
     
     return render(request, 'customer/shop.html')
 
@@ -29,6 +29,8 @@ def accountSettingPage(request):
     
     return render(request, 'customer/account-setting.html')
 
+
+# 
 
 @login_required()
 def productsPage(request):
@@ -46,3 +48,7 @@ def inputPage(request):
     return render(request, 'store/input.html')
 
 
+@login_required()
+def shopPage(request):
+    
+    return render(request, 'store/shop.html')
