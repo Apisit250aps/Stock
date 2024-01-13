@@ -216,19 +216,7 @@ def shopData(request):
 def createShop(request):
     http_status = status.HTTP_200_OK
     user = User.objects.get(username=request.user.username)
-    # user = request.data['user']
-    # area = request.data['area']
-    # product_type = request.data['product_type']
-    # name = request.data['name']
-    # contact = request.data['contact']
-    # tel = request.data['tel']
-    # fax = request.data['fax']
-    # email = request.data['email']
-    # remark = request.data['remark']
-    # province = request.data['province']
-    # district = request.data['district']
-    # sub_district = request.data['sub_district']
-    # address = request.data['address']
+    
     shop = request.data['data']
     shop = json.loads(shop)
     print(type(shop))
