@@ -12,11 +12,23 @@ def registerPage(request):
 
 
 
-
+# Customer Page
 @login_required()
 def indexPage(request):
     
-    return render(request, 'store/index.html')
+    return render(request, 'customer/index.html')
+
+@login_required()
+def shopPage(request):
+    
+    return render(request, 'customer/shop.html')
+
+
+@login_required()
+def accountSettingPage(request):
+    
+    return render(request, 'customer/account-setting.html')
+
 
 @login_required()
 def productsPage(request):

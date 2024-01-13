@@ -34,7 +34,7 @@ class ProductCategory(models.Model):
     def __str__(self):
         
         return self.name
-    
+
 class Area(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
@@ -47,14 +47,14 @@ class Area(models.Model):
     
     def __str__(self):
         return self.name
-    
+
 class Shop(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
-    # information
+    # contacts
     name = models.CharField(max_length=255)
     code = models.CharField(max_length=6, unique=True, blank=True, null=True)
     contact = models.CharField(max_length=255, blank=True)
@@ -67,13 +67,14 @@ class Shop(models.Model):
     district = models.CharField(max_length=255, blank=True)
     sub_district = models.CharField(max_length=255, blank=True)
     address = models.TextField(blank=True, null=True)
+    zip = models.CharField(max_length=6, blank=True)
     # timestamp
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
-    
+
 class Product(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)

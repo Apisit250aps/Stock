@@ -19,20 +19,29 @@ from . import views
 
 urlpatterns = [
     path('auth-login', views.loginUser, name='login-api'),
+    path('auth-register', views.registerUser, name='register-api'),
 
 
     path('get-product-type', views.getProductType, name='get-product-type-api'),
+    path('get-area', views.getArea, name='get-area-api'),
     path('get-product-category', views.getProductCategory,
          name='get-product-category-api'),
 
+    path('create-shop', views.createShop, name='create-shop-api'),
+
     path('store-product', views.shopProducts, name='get-store-product-api'),
     path('store-invoice', views.shopInvoice, name='get-shop-invoice-api'),
-    path('store-filter-invoice', views.shopFilterInvoice, name='filter-shop-invoice-api'),
+    path('store-filter-invoice', views.shopFilterInvoice,
+         name='filter-shop-invoice-api'),
     path('create-input-data', views.createInputData,
          name='create-input-data-api'),
-    
-    
+
+
     # product api
     path('add-product', views.addProduct, name='add-product-api'),
-    path('edit-product', views.editProduct, name='edit-product-api')
+    path('edit-product', views.editProduct, name='edit-product-api'),
+
+
+
+    path('product-type', views.getProductType),
 ]

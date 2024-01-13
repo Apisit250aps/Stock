@@ -24,6 +24,7 @@ import json
 import random
 
 from . import models
+from customer import models as customer_models
 from .models import (
     INVOICE_TYPE,
 )
@@ -91,6 +92,21 @@ def inputInvoiceData(invoiceSerializer):
 
     return InvoiceData
 
+def cusCode():
+    code = "{0:06}".format(random.randint(0, 99999))
+    print(code)
+    if customer_models.Customer.objects.filter(code=code).count() != 0:
+        cusCode()
+    
+    return code
+
+def shopCode():
+    code = "{0:06}".format(random.randint(0, 99999))
+    print(code)
+    if models.Shop.objects.filter(code=code).count() != 0:
+        shopCode()
+    
+    return code
 
 @csrf_exempt
 @api_view(["POST", ])
@@ -108,11 +124,14 @@ def registerUser(request):
             password=password
         )
         if user:
+            code = cusCode()
+            customer_models.Customer.objects.create(user=user, code=code)
             http_status = status.HTTP_201_CREATED
         else:
             http_status = status.HTTP_400_BAD_REQUEST
 
-    except:
+    except IOError as err:
+        print(err)
         http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
 
     return Response(status=http_status)
@@ -165,49 +184,54 @@ def getProductCategory(request):
         product_CategoryQuery, many=True)
     return Response(status=status.HTTP_200_OK, data=product_CategorySerializer.data)
 
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((AllowAny,))
+def getArea(request):
+    
+    return Response(
+        serializers.AreaSerializer(models.Area.objects.all(), many=True).data
+    )
+    
 
 @csrf_exempt
 @api_view(["POST", ])
 @permission_classes((IsAuthenticated,))
 def createShop(request):
     http_status = status.HTTP_200_OK
-    user = request.data['user']
-    area = request.data['area']
-    product_type = request.data['product_type']
-    name = request.data['name']
-    contact = request.data['contact']
-    tel = request.data['tel']
-    fax = request.data['fax']
-    email = request.data['email']
-    remark = request.data['remark']
-    province = request.data['province']
-    district = request.data['district']
-    sub_district = request.data['sub_district']
-    address = request.data['address']
-
-    try:
-        shop = models.Shop.objects.create(
-            user=user,
-            area=area,
-            product_type=product_type,
-            name=name,
-            contact=contact,
-            tel=tel,
-            fax=fax,
-            email=email,
-            remark=remark,
-            province=province,
-            district=district,
-            sub_district=sub_district,
-            address=address
-        )
+    user = User.objects.get(username=request.user.username)
+    # user = request.data['user']
+    # area = request.data['area']
+    # product_type = request.data['product_type']
+    # name = request.data['name']
+    # contact = request.data['contact']
+    # tel = request.data['tel']
+    # fax = request.data['fax']
+    # email = request.data['email']
+    # remark = request.data['remark']
+    # province = request.data['province']
+    # district = request.data['district']
+    # sub_district = request.data['sub_district']
+    # address = request.data['address']
+    shop = request.data['data']
+    shop = json.loads(shop)
+    print(type(shop))
+    shop['code'] = shopCode()
+    shop['area'] = models.Area.objects.get(id=int(shop['area']))
+    shop['product_type'] = models.ProductType.objects.get(id=int(shop['product_type']))
+    shop['user'] = user
+    print((shop))
+    
+    try :
+        shop = models.Shop.objects.create(**shop)
 
         if shop:
             http_status = status.HTTP_201_CREATED
         else:
             http_status = status.HTTP_400_BAD_REQUEST
 
-    except:
+    except IOError as err:
+        print(err)
         http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
 
     return Response(status=http_status)
@@ -427,3 +451,8 @@ def shopFilterInvoice(request):
     InvoiceData = inputInvoiceData(invoiceSerializer)
 
     return Response(status=status.HTTP_200_OK, data=InvoiceData)
+
+
+
+
+

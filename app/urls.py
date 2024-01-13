@@ -21,10 +21,19 @@ from . import views
 
 urlpatterns = [
     path('', views.indexPage, name='index-page'),
+    
+    
+    path('account/setting', views.accountSettingPage, name='account-setting-page'),
+    path('account/shop', views.shopPage, name='account-shop-page'),
+    
     path('auth-login/', views.loginPage, name='login-page'),
     path('auth-register/', views.registerPage, name='register-page'),
     path('auth-logout/', lambda request: redirect("index-page")
          if logout(request) else redirect("index-page"), name='logout'),
+    
+    
+    
+    
 
     path('store/products', views.productsPage, name='products-page'),
     path('store/invoices', views.invoicesPage, name='invoices-page'),

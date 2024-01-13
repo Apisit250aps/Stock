@@ -1,7 +1,7 @@
 {% extends 'auth/base.html' %}
 
 {% block content %}
-<div class="authentication-wrapper authentication-basic container-p-y">
+<div class="authentication-wrapper authentication-basic container-p-y" id="app">
     <div class="authentication-inner">
       <!-- Register Card -->
       <div class="card">
@@ -80,12 +80,12 @@
                 id="username"
                 name="username"
                 placeholder="Enter your username"
-                autofocus
+                autofocus v-model="username"
               />
             </div>
             <div class="mb-3">
               <label for="email" class="form-label">Email</label>
-              <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" />
+              <input type="text" class="form-control" id="email" name="email" placeholder="Enter your email" v-model="email"/>
             </div>
             <div class="mb-3 form-password-toggle">
               <label class="form-label" for="password">Password</label>
@@ -97,6 +97,7 @@
                   name="password"
                   placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
                   aria-describedby="password"
+                  v-model="password"
                 />
                 <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
               </div>
@@ -111,12 +112,12 @@
                 </label>
               </div>
             </div>
-            <button class="btn btn-primary d-grid w-100">Sign up</button>
+            <button @click="onRegister($event)" type="submit" class="btn btn-primary d-grid w-100">Sign up</button>
           </form>
 
           <p class="text-center">
             <span>Already have an account?</span>
-            <a href="auth-login-basic.html">
+            <a href="{% url 'login-page' %}">
               <span>Sign in instead</span>
             </a>
           </p>
@@ -128,5 +129,77 @@
 {% endblock content %}
 
 {% block script %}
+<script>
+  const { createApp } = Vue;
+  const app = createApp(
+      {
+          delimiters: ["[{", "}]"],
+          data() {
+              return {
 
+                  username: "",
+                  password: "",
+                  email:"",
+
+                  isValid: true
+              };
+          },
+          async mounted() {
+              await console.log("hello");
+          },
+          methods: {
+              onRegister(e) {
+                  e.preventDefault();
+                  this.isValid = true;
+
+                  if (this.username == '') {
+                      this.isValid = false;
+                  }
+                  if (this.password == '') {
+                      this.isValid = false;
+                  }
+                  if (this.email == '') {
+                    this.isValid = false;
+                }
+
+                  if (this.isValid) {
+                      const form_data = new FormData;
+                      form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                      form_data.append("username", this.username);
+                      form_data.append("password", this.password);
+                      form_data.append("email", this.email);
+
+                      axios(
+                          {
+                              method: "post",
+                              url: "{% url 'register-api' %}",
+                              data: form_data
+                          }
+                      ).then(async (response) => {
+                          console.log(response.status)
+                          if (response.status == 201) {
+                              Swal.fire({
+                                  title: "Success!",
+                                  text: "Register successfully!",
+                                  icon: "success"
+                              });
+                              setTimeout(()=>{
+                                  location.replace("{% url 'login-page' %}")
+                              },1000)
+                          }
+                          else {
+                              Swal.fire({
+                                  title: "Fail!",
+                                  text: "Password or Username is wrong!",
+                                  icon: "error"
+                              });
+                          }
+                      });
+                  }
+              }
+          }
+      }
+  );
+  app.mount("#app")
+</script>
 {% endblock script %}

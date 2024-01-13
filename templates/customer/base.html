@@ -97,7 +97,6 @@
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-
     <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
 
   </head>
@@ -246,7 +245,7 @@
             </li>
 
             <li class="menu-header small text-uppercase">
-              <span class="menu-header-text">Manage</span>
+              <span class="menu-header-text">User</span>
             </li>
             <li class="menu-item">
               <a href="javascript:void(0);" class="menu-link menu-toggle">
@@ -255,7 +254,7 @@
               </a>
               <ul class="menu-sub">
                 <li class="menu-item">
-                  <a href="pages-account-settings-account.html" class="menu-link">
+                  <a href="{% url 'account-setting-page' %}" class="menu-link">
                     <div data-i18n="Account">Account</div>
                   </a>
                 </li>

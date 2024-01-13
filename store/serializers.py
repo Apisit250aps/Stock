@@ -12,6 +12,11 @@ class ProductTypeSerializer(serializers.ModelSerializer):
         model = models.ProductType
         fields = "__all__"
 
+class AreaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Area
+        fields = "__all__"
+
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = models.ProductCategory
