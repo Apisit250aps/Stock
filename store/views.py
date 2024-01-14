@@ -24,10 +24,26 @@ import json
 import random
 
 from . import models
-from customer import models as customer_models
+
 from .models import (
     INVOICE_TYPE,
 )
+from customer.models import (
+    ORDER_STATUS,
+    Order,
+    Customer,
+    OutputData,
+    OutputInvoice,
+    
+)
+
+from customer.serializers import (
+    OrderSerializer,
+    OutputDataSerializer,
+    CustomerSerializer,
+    
+)
+
 from . import serializers
 
 # Create your views here.
@@ -95,7 +111,7 @@ def inputInvoiceData(invoiceSerializer):
 def cusCode():
     code = "{0:06}".format(random.randint(0, 99999))
     print(code)
-    if customer_models.Customer.objects.filter(code=code).count() != 0:
+    if Customer.objects.filter(code=code).count() != 0:
         cusCode()
     
     return code
@@ -125,7 +141,7 @@ def registerUser(request):
         )
         if user:
             code = cusCode()
-            customer_models.Customer.objects.create(user=user, code=code)
+            Customer.objects.create(user=user, code=code)
             http_status = status.HTTP_201_CREATED
         else:
             http_status = status.HTTP_400_BAD_REQUEST
@@ -503,3 +519,46 @@ def allProduct(request):
     
     
     return Response(productData, status=http_status)
+
+
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def shopOrder(request):
+    http_status = status.HTTP_200_OK
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+
+    orderQ = Order.objects.filter(shop=shop).order_by('-status', '-id')
+    orderS = OrderSerializer(orderQ, many=True).data
+    orderD = []
+    
+    for order in orderS:
+        order = dict(order)
+        customer = Customer.objects.get(id=int(order['customer']))
+        invoice = OutputInvoice.objects.get(id=int(order['invoice']))
+        data = []
+        output = OutputDataSerializer(OutputData.objects.filter(invoice=invoice), many=True).data
+        for pro in output:
+            pro = dict(pro)
+            pro['product']  = models.Product.objects.get(id=int(pro['product'])).name
+            data.append(pro)
+            
+        # output['product'] = Product.objects.get(id=int(output['product'])).name
+        order['status'] = map_choice(ORDER_STATUS, order['status'])
+        order['customer'] = CustomerSerializer(customer).data
+        order['invoice'] = invoice.invoice_no
+        
+        order['product'] = data
+        orderD.append(order)
+    
+    return Response(
+        orderD, status=http_status
+    )
+
+
+def map_choice(choice, value):
+    for i in choice:
+        if i[0] == value:
+            return i[1]
+

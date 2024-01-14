@@ -29,6 +29,11 @@ def cartPage(request):
     return render(request, 'customer/cart.html')
 
 @login_required()
+def orderPage(request):
+    
+    return render(request, 'customer/order.html')
+
+@login_required()
 def accountSettingPage(request):
     
     return render(request, 'customer/account-setting.html')
@@ -61,3 +66,8 @@ def categoryPage(request):
 def shopPage(request):
     
     return render(request, 'store/shop.html')
+
+@login_required()
+def orderShopPage(request):
+    
+    return render(request, 'store/order.html')

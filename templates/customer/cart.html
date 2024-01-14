@@ -132,11 +132,11 @@
                 checkOut(list) {
                     let products = new Array;
                     const form_data = new FormData;
-                    let shop = 0
-                    console.log(list)
+                    let shop = 0;
+                    console.log(list);
                     for (item of list) {
-                        shop = item.shop_id
-                        console.log(shop)
+                        shop = item.shop_id;
+                        console.log(shop);
                         products.push(
                             {
                                 product: item.product.id,
@@ -156,9 +156,18 @@
                             data: form_data
                         }
                     ).then((response) => {
-                        console.log(response.status)
+                        console.log(response.status);
                         if (response.status == 201) {
-
+                            axios(
+                                {
+                                    method: 'get',
+                                    url: "{% url 'cart-list-api' %}"
+                                }
+                            ).then((response) => {
+                                if (response.status == 200) {
+                                    this.carts = response.data;
+                                }
+                            });
                         }
                     });
                 }

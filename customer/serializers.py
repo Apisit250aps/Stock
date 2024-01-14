@@ -17,3 +17,12 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = models.CartItem
         fields = "__all__"
 
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Order
+        fields = "__all__"
+        
+class OutputDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OutputData
+        fields = "__all__"

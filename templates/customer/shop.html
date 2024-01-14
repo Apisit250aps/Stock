@@ -110,8 +110,8 @@
                 <a class="nav-link " href="{% url 'account-setting-page' %}"><i class="bx bx-user me-1"></i> Account</a>
             </li>
             <li class="nav-item ">
-                <a class="nav-link active" href="{% url 'account-shop-page' %}"><i class="bx bx-bell me-1"></i>
-                    Notifications</a>
+                <a class="nav-link active" href="{% url 'account-shop-page' %}"><i class="bx bx-store me-1"></i>
+                    Shop</a>
             </li>
         </ul>
 
@@ -126,18 +126,13 @@
                     </div>
                 </div>
                 <form id="formAccountDeactivation" onsubmit="return false">
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" name="accountActivation"
-                            id="accountActivation" />
-                        <label class="form-check-label" for="accountActivation">I confirm my account
-                            deactivation</label>
-                    </div>
+                    
                     <button type="submit" data-bs-toggle="modal" data-bs-target="#ShopCreate"
-                        class="btn btn-danger deactivate-account">Deactivate Account</button>
+                        class="btn btn-danger deactivate-account">Create new Shop</button>
                 </form>
             </div>
             <div class="card-body" v-if="hasShop">
-                <a href="{% url 'shop-page' %}">Shop</a>
+                <a href="{% url 'shop-page' %}" class="btn btn-primary">Shop</a>
             </div>
 
         </div>

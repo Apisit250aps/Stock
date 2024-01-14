@@ -1,4 +1,4 @@
-{% extends 'customer/base.html' %}
+{% extends 'store/base.html' %}
 <!--  -->
 {% block content %}
 <div class="card mb-3" v-for="(item, index) in carts" :key="index">
@@ -54,7 +54,7 @@
             data() {
                 return {
                     layout: "menu",
-                    page: "order",
+                    page: "cart",
 
                     carts: null
 
@@ -65,7 +65,7 @@
                 axios(
                     {
                         method: 'get',
-                        url: "{% url 'order-api' %}"
+                        url: "{% url 'order-shop-api' %}"
                     }
                 ).then((response) => {
                     if (response.status == 200) {

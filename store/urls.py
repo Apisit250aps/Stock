@@ -39,6 +39,9 @@ urlpatterns = [
          name='filter-shop-invoice-api'),
     path('create-input-data', views.createInputData,
          name='create-input-data-api'),
+    
+    
+    path('store/order', views.shopOrder, name='order-shop-api'),
 
 
     # product api
