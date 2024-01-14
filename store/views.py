@@ -178,11 +178,33 @@ def getProductCategory(request):
     user = User.objects.get(username=request.user.username)
     shop = models.Shop.objects.get(user=user)
 
-    product_CategoryQuery = models.ProductCategory.objects.filter(
-        type=int(shop.product_type.id))
+    product_CategoryQuery = models.ProductCategory.objects.filter(shop=shop)
     product_CategorySerializer = serializers.ProductCategorySerializer(
         product_CategoryQuery, many=True)
     return Response(status=status.HTTP_200_OK, data=product_CategorySerializer.data)
+
+
+@csrf_exempt
+@api_view(["POST", ])
+@permission_classes((IsAuthenticated,))
+def createCategory(request):
+    http_status = status.HTTP_200_OK
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+    data = {}
+    data['shop'] = shop
+    data['name'] = request.data['category']
+    
+    try :
+        models.ProductCategory.objects.create(
+            **data
+        )
+        http_status = status.HTTP_201_CREATED
+    except:
+        http_status = status.HTTP_400_BAD_REQUEST
+    
+    return Response(status=http_status)
+
 
 @csrf_exempt
 @api_view(["GET", ])
@@ -265,39 +287,45 @@ def createInputData(request):
         invoice_no=invoice_no,
         remark=remark,
     )
+    try :
+        
 
-    # create product and input data
-    products = json.loads(request.data['products'])
-    for key, product in products.items():
+        # create product and input data
+        products = json.loads(request.data['products'])
+        for key, product in products.items():
+            if (product['total'] == ''):
+                product['total'] = 0
+            if (product['discount'] == ''):
+                product['discount'] = 0
+            total_price += float(product['total'])
+            total_discount += float(product['discount'])
 
-        total_price += product['total']
-        total_discount += product['discount']
+            discount = product['discount']
+            quantity = product['unit']
+            unit_price = product['price']
 
-        discount = product['discount']
-        quantity = product['unit']
-        unit_price = product['price']
+            del product['total']
+            del product['discount']
+            product['shop'] = shop
+            cats = product['category']
+            print(cats, type(cats))
 
-        del product['total']
-        del product['discount']
-        product['shop'] = shop
-        cats = product['category']
-        print(cats, type(cats))
+            product['category'] = models.ProductCategory.objects.get(
+                id=int(product['category']))
+            product['code'] = product_code(cats, shop)
 
-        product['category'] = models.ProductCategory.objects.get(
-            id=int(product['category']))
-        product['code'] = product_code(cats, shop)
-
-        product = models.Product.objects.create(**product)
-        input_data = models.InputData.objects.create(
-            product=product,
-            quantity=quantity,
-            invoice=invoice,
-            unit_price=unit_price,
-            discount=discount
-        )
-
-    models.InputInvoice.objects.filter(id=invoice.id).update(
-        total_price=total_price, discount=total_discount)
+            product = models.Product.objects.create(**product)
+            input_data = models.InputData.objects.create(
+                product=product,
+                quantity=quantity,
+                invoice=invoice,
+                unit_price=unit_price,
+                discount=discount
+            )
+    except IOError as err:
+        print(err)
+        models.InputInvoice.objects.filter(id=invoice.id).delete()
+   
 
     return Response(status=status.HTTP_201_CREATED)
 
@@ -457,6 +485,21 @@ def shopFilterInvoice(request):
     return Response(status=status.HTTP_200_OK, data=InvoiceData)
 
 
-
-
-
+@csrf_exempt
+@api_view(['GET'])
+@permission_classes((AllowAny,))
+def allProduct(request):
+    http_status = status.HTTP_200_OK
+    
+    
+    productQuery = models.Product.objects.all()
+    productSerializer = serializers.ProductSerializer(productQuery, many=True).data
+    productData = []
+    for item in productSerializer:
+        item = dict(item)
+        item['category'] = models.ProductCategory.objects.get(id=int(item['category'])).name
+        productData.append(item)
+        
+    
+    
+    return Response(productData, status=http_status)

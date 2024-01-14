@@ -28,6 +28,8 @@ urlpatterns = [
     path('get-area', views.getArea, name='get-area-api'),
     path('get-product-category', views.getProductCategory,
          name='get-product-category-api'),
+    path('create-product-category', views.createCategory,
+         name='create-product-category-api'),
 
     path('create-shop', views.createShop, name='create-shop-api'),
 
@@ -41,6 +43,7 @@ urlpatterns = [
 
     # product api
     path('add-product', views.addProduct, name='add-product-api'),
+    path('all-product', views.allProduct, name='all-product-api'),
     path('edit-product', views.editProduct, name='edit-product-api'),
 
 

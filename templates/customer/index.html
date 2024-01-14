@@ -1,25 +1,101 @@
 {% extends 'customer/base.html' %}
 <!--  -->
 {% block content %}
-  <!--  -->
+<div class="card h-100">
+    <div class="d-flex align-items-center justify-content-between card-header">
+        <h1 class="">
+            Products
+        </h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filter">
+            <i class="bx bx-filter-alt"></i>
+        </button>
+    </div>
+    <div class="table-responsive text-nowrap overflow-y-scroll">
+        <table class="table table-borderless table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>category</th>
+                    <th>price</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in products" :key="index">
+                    <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>[{item.name}]</strong>
+                    </td>
+
+                    <td>
+                        <span class="badge bg-label-dark me-1">[{item.category}]</span>
+                    </td>
+                    <td>
+                        [{item.price}] ฿
+                    </td>
+                    <td>
+                        <button @click="addCart(item.id)" type="button" class="btn btn-primary">Add cart</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock content %}
 <!--  -->
 {% block script %}
 <script>
-    const { createApp } = Vue
+    const { createApp } = Vue;
     const app = createApp(
         {
-            delimiters:["[{","}]"],
-            data(){
+            delimiters: ["[{", "}]"],
+            data() {
                 return {
-                    layout:"index",
-                    page:"dashboard",
+                    layout: "index",
+                    page: "dashboard",
 
+                    products: null
+
+
+                };
+            },
+            mounted() {
+                axios(
+                    {
+                        method: 'get',
+                        url: "{% url 'all-product-api' %}"
+                    }
+                ).then((response) => {
+                    if (response.status == 200) {
+                        this.products = response.data;
+                    }
+                });
+            },
+            methods: {
+                addCart(id) {
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                    form_data.append("product", id);
+                    form_data.append("unit", 1);
+                    form_data.append("action", 1);
+                    axios(
+                        {
+                            method: 'post',
+                            url: "{% url 'action-cart-api' %}",
+                            data:form_data
+                        }
+                    ).then((response) => {
+                        if (response.status == 201) {
+                            Swal.fire({
+                                title: "Success!",
+                                text: "Add cart",
+                                icon: "success"
+                            });
+                        }
+                    });
 
                 }
             }
         }
-    )
+    );
     app.mount("#app")
 </script>
 {% endblock script %}

@@ -22,7 +22,7 @@ from . import views
 urlpatterns = [
     path('', views.indexPage, name='index-page'),
     
-    
+    path('cart', views.cartPage, name='cart-page'),
     path('account/setting', views.accountSettingPage, name='account-setting-page'),
     path('account/shop', views.shopCreatePage, name='account-shop-page'),
     
@@ -39,4 +39,5 @@ urlpatterns = [
     path('store/invoices', views.invoicesPage, name='invoices-page'),
     path('store/input', views.inputPage, name='input-page'),
     path('store/shop', views.shopPage, name='shop-page'),
+    path('store/category', views.categoryPage, name='category-page'),
 ]

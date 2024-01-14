@@ -1,3 +1,4 @@
+from django.db.models import Q, F
 from django.contrib.auth.models import User
 from . import models
 from . import serializers
@@ -10,12 +11,37 @@ from rest_framework import status
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 
+from store.models import (
+    Product,
+    ProductCategory,
+    Shop,
+    InputInvoiceCounter
+)
+
+from store.serializers import (
+    ProductCategorySerializer,
+    ProductSerializer
+)
 
 from django.contrib.staticfiles import finders
 
-
+from datetime import datetime
+from datetime import timedelta
 import json
 # Create your views here.
+
+
+def invoice_code():
+
+    date = datetime.today().date().__str__().replace("-", "")
+    if InputInvoiceCounter.objects.filter(on_date=date).count() == 0:
+        InputInvoiceCounter.objects.create(on_date=date)
+    else:
+        InputInvoiceCounter.objects.filter(
+            on_date=date).update(no=F('no')+1)
+    count = InputInvoiceCounter.objects.get(on_date=date)
+
+    return date+"{0:04}".format(int(count.no))
 
 
 @csrf_exempt
@@ -100,10 +126,14 @@ def createCustomer(request):
 
     print(user_update)
     print(customer_update)
-    
+
     try:
         User.objects.filter(id=user.id).update(**user_update)
-        models.Customer.objects.filter(user=user).update(**customer_update)
+        models.Customer.objects.filter(
+            user=user).update(**customer_update)
+
+        customer = models.Customer.objects.get(user=user)
+        cart = models.Cart.objects.create(customer=customer)
         http_status = status.HTTP_200_OK
     except IOError as err:
         print(err)
@@ -113,6 +143,7 @@ def createCustomer(request):
         status=http_status
     )
 
+
 @csrf_exempt
 @api_view(["GET"])
 @permission_classes((AllowAny,))
@@ -120,8 +151,136 @@ def getCustomerSelf(request):
     http_status = status.HTTP_200_OK
     user = User.objects.get(username=request.user.username)
     customer = models.Customer.objects.get(user=user)
-    data=serializers.CustomerSerializer(customer).data
-    
-    
-    
+    data = serializers.CustomerSerializer(customer).data
+
     return Response(data, http_status)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def actionCart(request):
+    http_status = status.HTTP_200_OK
+    user = User.objects.get(username=request.user.username)
+    customer = models.Customer.objects.get(user=user)
+    cart = models.Cart.objects.get(customer=customer)
+    action = int(request.data['action'])
+    product = int(request.data['product'])
+    unit = int(request.data['unit']) * action
+
+    product = Product.objects.get(id=product)
+
+    if models.CartItem.objects.filter(cart=cart, product=product).count() == 0:
+        models.CartItem.objects.create(cart=cart, product=product, unit=unit)
+    else:
+        models.CartItem.objects.filter(
+            cart=cart, product=product).update(unit=F('unit')+unit)
+
+    if models.CartItem.objects.get(cart=cart, product=product).unit == 0:
+
+        models.CartItem.objects.filter(cart=cart, product=product).delete()
+
+    http_status = status.HTTP_201_CREATED
+
+    return Response(status=http_status)
+
+
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def cartList(request):
+    http_status = status.HTTP_200_OK
+    user = User.objects.get(username=request.user.username)
+    customer = models.Customer.objects.get(user=user)
+    cart = models.Cart.objects.get(customer=customer)
+    cartData = {}
+    cart_items = serializers.CartItemSerializer(
+        models.CartItem.objects.filter(cart=cart), many=True).data
+
+    for item in cart_items:
+        item = dict(item)
+        product = Product.objects.get(id=int(item['product']))
+
+        item['product'] = dict(ProductSerializer(product).data)
+        shop = Shop.objects.get(id=int(item['product']['shop']))
+        item['shop_id'] = shop.id
+
+        if shop.name in cartData:
+            cartData[shop.name].append(item)
+        else:
+            cartData[shop.name] = [item]
+
+        print()
+
+    cartArray = []
+    for i, o in cartData.items():
+        cartArray.append({
+            "shop": i,
+            "products": o})
+
+    return Response(status=http_status, data=cartArray)
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def checkout(request):
+    http_status = status.HTTP_200_OK
+    shop_id = int(request.data['shop'])
+    shop = Shop.objects.get(id=shop_id)
+    user = User.objects.get(username=request.user.username)
+    customer = models.Customer.objects.get(user=user)
+    cart = models.Cart.objects.get(customer=customer)
+    
+    
+
+    product = request.data['product']
+    product = json.loads(product)
+
+    print(type(product))
+    try :
+        
+        invoice_no = invoice_code()
+
+        invoice = models.OutputInvoice.objects.create(
+            shop=shop,
+            customer=customer,
+            invoice_no=invoice_no,
+            discount=0,
+            remark="-"
+        )
+
+        for item in product.values():
+            print(item)
+            product = Product.objects.get(id=int(item['product']))
+            unit = item['value']
+
+            output_data = models.OutputData.objects.create(
+                invoice=invoice,
+                product=product,
+                quantity=unit,
+                unit_price=product.price,
+                discount=0
+            )
+            
+            if output_data:
+                models.CartItem.objects.filter(
+                    cart=cart,
+                    product=product
+                ).delete()
+            
+            
+            
+            
+
+        models.Order.objects.create(
+            customer=customer,
+            shop=shop,
+            invoice=invoice,
+            status=1
+        )
+        http_status = status.HTTP_201_CREATED
+    except :
+        http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+
+    return Response(status=200)

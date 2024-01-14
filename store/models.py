@@ -21,19 +21,7 @@ class ProductType(models.Model):
         
         return self.name
     
-class ProductCategory(models.Model):
-    # property
-    id = models.BigAutoField(primary_key=True)
-    type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
-    name = models.CharField(max_length=255)
-    count = models.IntegerField(default=0, blank=True)
-    # timestamp
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    def __str__(self):
-        
-        return self.name
+
 
 class Area(models.Model):
     # property
@@ -75,6 +63,20 @@ class Shop(models.Model):
     def __str__(self):
         return self.name
 
+class ProductCategory(models.Model):
+    # property
+    id = models.BigAutoField(primary_key=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    count = models.IntegerField(default=0, blank=True)
+    # timestamp
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    def __str__(self):
+        
+        return self.name
+
 class Product(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
@@ -93,7 +95,7 @@ class Product(models.Model):
     
     def __str__(self):
         return self.name
-    
+
 class ProductDelete(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
@@ -110,8 +112,8 @@ class InputInvoice(models.Model):
     id = models.BigAutoField(primary_key=True)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
     invoice_no = models.CharField(max_length=16, unique=True, null=True)
-    total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True)
-    discount = models.DecimalField(max_digits=9, decimal_places=2, null=True)
+    # total_price = models.DecimalField(max_digits=9, decimal_places=2, null=True)
+    discount = models.DecimalField(max_digits=9, decimal_places=2, null=True, default=0)
     type=models.IntegerField(choices=INVOICE_TYPE, default=1)
     remark = models.TextField(blank=True, null=True)
     # timestamp 
@@ -128,7 +130,7 @@ class InputData(models.Model):
     quantity = models.IntegerField()
     unit_price = models.DecimalField(max_digits=9, decimal_places=2)
     discount = models.DecimalField(max_digits=9, decimal_places=2)
-    # timestamp 
+    # timestamp
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

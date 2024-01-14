@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "stock_dev_3",
+        "NAME": "stock_dev_4",
         "USER": "postgres",
         "PASSWORD": "apisit250",
         "HOST": "127.0.0.1",

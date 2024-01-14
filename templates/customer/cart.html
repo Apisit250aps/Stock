@@ -1,0 +1,179 @@
+{% extends 'customer/base.html' %}
+<!--  -->
+{% block content %}
+<div class="card mb-3" v-for="(item, index) in carts" :key="index">
+    <div class="d-flex align-items-center justify-content-between card-header">
+        <h1 class="">
+            [{item.shop}]
+        </h1>
+        <button type="button" class="btn btn-primary" @click="checkOut(item.products)">
+            <i class="bx bx-cart"></i>
+        </button>
+    </div>
+    <div class="table-responsive text-nowrap overflow-y-scroll">
+        <table class="table table-borderless table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>unit</th>
+                    <th>price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(product, id) in item.products" :key="id">
+                    <td><i class="fab fa-angular fa-lg text-danger me-3"></i> <strong>[{ product.product.name
+                            }]</strong>
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-danger me-1"
+                            @click="delCart(product.product.id)">-</button>
+                        <span class="badge bg-label-dark me-1">[{product.unit}]</span>
+                        <button type="button" class="btn btn-warning" @click="addCart(product.product.id)">+</button>
+                    </td>
+                    <td>
+                        [{product.product.price}]
+                    </td>
+                    <td>
+                        [{product.product.price * product.unit }]
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock content %}
+<!--  -->
+{% block script %}
+<script>
+    const { createApp } = Vue;
+    const app = createApp(
+        {
+            delimiters: ["[{", "}]"],
+            data() {
+                return {
+                    layout: "menu",
+                    page: "cart",
+
+                    carts: null
+
+
+                };
+            },
+            mounted() {
+                axios(
+                    {
+                        method: 'get',
+                        url: "{% url 'cart-list-api' %}"
+                    }
+                ).then((response) => {
+                    if (response.status == 200) {
+                        this.carts = response.data;
+                    }
+                });
+            },
+            methods: {
+                addCart(id) {
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                    form_data.append("product", id);
+                    form_data.append("unit", 1);
+                    form_data.append("action", 1);
+                    axios(
+                        {
+                            method: 'post',
+                            url: "{% url 'action-cart-api' %}",
+                            data: form_data
+                        }
+                    ).then((response) => {
+                        if (response.status == 201) {
+                            axios(
+                                {
+                                    method: 'get',
+                                    url: "{% url 'cart-list-api' %}"
+                                }
+                            ).then((response) => {
+                                if (response.status == 200) {
+                                    this.carts = response.data;
+                                }
+                            });
+                        }
+                    });
+
+                },
+                delCart(id) {
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                    form_data.append("product", id);
+                    form_data.append("unit", 1);
+                    form_data.append("action", -1);
+                    axios(
+                        {
+                            method: 'post',
+                            url: "{% url 'action-cart-api' %}",
+                            data: form_data
+                        }
+                    ).then((response) => {
+                        if (response.status == 201) {
+                            axios(
+                                {
+                                    method: 'get',
+                                    url: "{% url 'cart-list-api' %}"
+                                }
+                            ).then((response) => {
+                                if (response.status == 200) {
+                                    this.carts = response.data;
+                                }
+                            });
+                        }
+                    });
+
+                },
+                checkOut(list) {
+                    let products = new Array;
+                    const form_data = new FormData;
+                    let shop = 0
+                    console.log(list)
+                    for (item of list) {
+                        shop = item.shop_id
+                        console.log(shop)
+                        products.push(
+                            {
+                                product: item.product.id,
+                                value: item.unit
+                            }
+                        );
+                    }
+                    const out = JSON.stringify(Object.assign({}, products));
+                    form_data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                    form_data.append("product", out);
+                    form_data.append("shop", shop);
+
+                    axios(
+                        {
+                            method: 'post',
+                            url: "{% url 'check-out-api' %}",
+                            data: form_data
+                        }
+                    ).then((response) => {
+                        console.log(response.status)
+                        if (response.status == 201) {
+
+                        }
+                    });
+                }
+            }
+        }
+    );
+    app.mount("#app")
+</script>
+{% endblock script %}
+<!-- <script>
+    const { createApp } = Vue
+    const app = createApp(
+        {
+            delimiters:["[{","}]"]
+        }
+    )
+    app.mount("#app")
+</script> -->

@@ -110,7 +110,7 @@
 
         <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
           <div class="app-brand demo">
-            <a href="index.html" class="app-brand-link">
+            <a href="{%url 'index-page'%}" class="app-brand-link">
               <span class="app-brand-logo demo">
                 <svg
                   width="25"
@@ -227,6 +227,12 @@
               <a href="{% url 'products-page' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-store-alt"></i>
                 <div data-i18n="Basic">Products</div>
+              </a>
+            </li>
+            <li class="menu-item" :class="{ 'active':layout=='store'&&page=='category'}">
+              <a href="{% url 'category-page' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-store-alt"></i>
+                <div data-i18n="Basic">category</div>
               </a>
             </li>
             <!-- User interface -->

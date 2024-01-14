@@ -11,10 +11,10 @@ class ProductTypeAdmin(admin.ModelAdmin):
 @admin.register(models.ProductCategory)
 class ProductCategoryAdmin(admin.ModelAdmin):
     list_display = [
-        'type',
+        # 'type',
         'name'
     ]
-    
+
 @admin.register(models.Area)
 class AreaAdmin(admin.ModelAdmin):
     list_display = [

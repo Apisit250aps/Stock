@@ -23,6 +23,10 @@ def shopCreatePage(request):
     
     return render(request, 'customer/shop.html')
 
+@login_required()
+def cartPage(request):
+    
+    return render(request, 'customer/cart.html')
 
 @login_required()
 def accountSettingPage(request):
@@ -46,6 +50,11 @@ def invoicesPage(request):
 def inputPage(request):
     
     return render(request, 'store/input.html')
+
+@login_required()
+def categoryPage(request):
+    
+    return render(request, 'store/category.html')
 
 
 @login_required()
