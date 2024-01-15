@@ -34,6 +34,7 @@ from customer.models import (
     Customer,
     OutputData,
     OutputInvoice,
+    Cart,
     
 )
 
@@ -141,7 +142,9 @@ def registerUser(request):
         )
         if user:
             code = cusCode()
-            Customer.objects.create(user=user, code=code)
+            
+            Cart.objects.create(customer=Customer.objects.create(user=user, code=code))
+            
             http_status = status.HTTP_201_CREATED
         else:
             http_status = status.HTTP_400_BAD_REQUEST
@@ -254,27 +257,30 @@ def shopData(request):
 def createShop(request):
     http_status = status.HTTP_200_OK
     user = User.objects.get(username=request.user.username)
-    
-    shop = request.data['data']
-    shop = json.loads(shop)
-    print(type(shop))
-    shop['code'] = shopCode()
-    shop['area'] = models.Area.objects.get(id=int(shop['area']))
-    shop['product_type'] = models.ProductType.objects.get(id=int(shop['product_type']))
-    shop['user'] = user
-    print((shop))
-    
-    try :
-        shop = models.Shop.objects.create(**shop)
+    if models.Shop.objects.filter(user=user).count() == 0:
+        
+        shop = request.data['data']
+        shop = json.loads(shop)
+        print(type(shop))
+        shop['code'] = shopCode()
+        shop['area'] = models.Area.objects.get(id=int(shop['area']))
+        shop['product_type'] = models.ProductType.objects.get(id=int(shop['product_type']))
+        shop['user'] = user
+        print((shop))
+        
+        try :
+            shop = models.Shop.objects.create(**shop)
 
-        if shop:
-            http_status = status.HTTP_201_CREATED
-        else:
-            http_status = status.HTTP_400_BAD_REQUEST
+            if shop:
+                http_status = status.HTTP_201_CREATED
+            else:
+                http_status = status.HTTP_400_BAD_REQUEST
 
-    except IOError as err:
-        print(err)
-        http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+        except IOError as err:
+            print(err)
+            http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
+    else :
+        http_status = status.HTTP_400_BAD_REQUEST
 
     return Response(status=http_status)
 
@@ -432,7 +438,6 @@ def addProduct(request):
         invoice = models.InputInvoice.objects.create(
             shop=shop,
             invoice_no=invoice_no,
-            total_price=(unit*product.price),
             discount=total_discount,
             remark=remark,
             type=2
@@ -514,10 +519,9 @@ def allProduct(request):
     for item in productSerializer:
         item = dict(item)
         item['category'] = models.ProductCategory.objects.get(id=int(item['category'])).name
+        item['shop'] = models.Shop.objects.get(id=int(item['shop'])).name
         productData.append(item)
         
-    
-    
     return Response(productData, status=http_status)
 
 

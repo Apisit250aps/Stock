@@ -11,7 +11,7 @@ INVOICE_TYPE = (
 class ProductType(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255,unique=True)
     count = models.IntegerField(default=0, blank=True)
     # timestamp
     created_at = models.DateTimeField(auto_now_add=True)
@@ -27,7 +27,7 @@ class Area(models.Model):
     # property
     id = models.BigAutoField(primary_key=True)
     code = models.CharField(max_length=2, unique=True, blank=True)
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     count = models.IntegerField(default=0, blank=True)
     # timestamp
     created_at = models.DateTimeField(auto_now_add=True)
@@ -43,7 +43,7 @@ class Shop(models.Model):
     area = models.ForeignKey(Area, on_delete=models.CASCADE)
     product_type = models.ForeignKey(ProductType, on_delete=models.CASCADE)
     # contacts
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     code = models.CharField(max_length=6, unique=True, blank=True, null=True)
     contact = models.CharField(max_length=255, blank=True)
     tel = models.CharField(max_length=10, blank=True)

@@ -57,29 +57,152 @@
 
 erDiagram 
 
-User ||--|| Shop : create 
-Shop ||--|{ Product : input
-Shop ||--|{ Category : create
-Shop ||--|{ InputInvoice : create
-Shop ||--|{ Order : on
+User {
+    id int PK
+    username char
+    email char
+    password char
+
+}
+
+Shop {
+    id int PK
+    user int FK
+    area int FK
+    product_type int FK
+    name char 
+    code char
+    contact char
+    tel char
+    fax char
+    email char
+    remark char
+    province char
+    district char
+    sub_district char
+    address char
+    zip char
+    created_at timestamp
+    updated_at timestamp
+}
+
+User ||--|| Shop : has 
+Shop ||--|{ Product : have
+Shop ||--|{ Category : have
+Shop ||--|{ InputInvoice : have
+Shop ||--|{ Order : have
 
 InputInvoice ||--|{ InputData : have
-InputData ||--|| Product : in
+InputData ||--|| Product : has
 
-User ||--|| Customer : create
-Customer ||--|{ OutputInvoice : create
-Customer ||--|{ Order : on
-Customer ||--|| Cart : create
+User ||--|| Customer : has
+Customer ||--|{ OutputInvoice : have
+Customer ||--|{ Order : have
+Customer ||--|| Cart : has
 
 Cart ||--|{ CartItem : have
 
 
 OutputInvoice ||--|{ OutputData : have
-OutputData ||--|| Product : in
+OutputData ||--|| Product : has
 
-Product ||--|| Category : in
-ProductType ||--|{ Shop : on
+Product ||--|| Category : has
+ProductType ||--|{ Shop : have
 
-Order ||--|| OutputInvoice : on
+Order ||--|| OutputInvoice : has
 
 ```
+
+---
+## Data Dictionary
+
+### User
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |
+| username | CHAR  |  (255) |
+| email  | CHAR   | (255)  |
+| password  | CHAR  |  (255) |
+
+### ProductType
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| name | CHAR  |  (255) |  |
+| count  | INT  |  (255) |  |
+
+### Area
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| code | CHAR  |  (255) | UK |
+| name | CHAR  |  (255) |  |
+| count  | INT  |  (255) |  |
+
+
+
+### Shop
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| user | INT  |  (11) |  FK |
+| product_type | INT  |  (11) |  FK |
+| area  | INT  |  (11) |  FK  |
+| name  | CHAR   | (255)  |     |
+| code  | CHAR   | (6)  |     |
+| contact  | CHAR   | (255)  |     |
+| tel  | CHAR   | (10)  |     |
+| fax  | CHAR   | (10)  |     |
+| email  | CHAR   | (255)  |     |
+| remark  | TEXT   | ()  |     |
+| address  | TEXT   | ()  |     |
+| province  | CHAR   | (255)  |     |
+| district  | CHAR   | (255)  |     |
+| sub_district  | CHAR   | (255)  |     |
+| zip  | CHAR   | (5)  |     |
+| created_at  | TIMESTAMP   | ()  |     |
+| updated_at  | TIMESTAMP   | ()  |     |
+
+
+### ProductCategory
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| shop | INT  |  (11) | FK |
+| name | CHAR  |  (255) |  |
+| count  | INT  |  (11) |  |
+
+### Product
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| shop | INT  |  (11) | FK |
+| name | CHAR  |  (255) |  |
+| desc | TEXT  |  () |  |
+| price  | DECIMAL   | (9, 2)  |     |
+| cost  | DECIMAL   | (9, 2)  |     |
+| unit | INT  |  (11) |  |
+
+
+### InputInvoice
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| shop | INT  |  (11) | FK |
+| invoice_no  | INT  |  (6) |  |
+| type  | INT  |  (11) |  |
+| remark  | TEXT   | ()  |     |
+| created_at  | TIMESTAMP   | ()  |     |
+| updated_at  | TIMESTAMP   | ()  |     |
+
+
+### InputData
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id  | INT | 11 | PK |   |
+| shop | INT  |  (11) | FK |
+| invoice  | INT  |  (11) | FK |
+| quantity  | INT   | (11)  |     |
+| unit_price  | DECIMAL   | (9, 2)  |     |
+| created_at  | TIMESTAMP   | ()  |     |
+| updated_at  | TIMESTAMP   | ()  |     |

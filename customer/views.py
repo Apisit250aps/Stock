@@ -89,7 +89,7 @@ def getTambon(request):
     msg = 'already get thai tambon'
     http_status = status.HTTP_200_OK
 
-    # get thai province file
+    # get thai province file-
     result = finders.find('data/thai_province.json')
     with open(result, encoding='utf-8') as f:
         province = json.load(f)
@@ -163,7 +163,10 @@ def actionCart(request):
     http_status = status.HTTP_200_OK
     user = User.objects.get(username=request.user.username)
     customer = models.Customer.objects.get(user=user)
-    cart = models.Cart.objects.get(customer=customer)
+    if models.Cart.objects.filter(customer=customer).count() != 0:
+        cart = models.Cart.objects.get(customer=customer)
+    else :
+        cart = models.Cart.objects.create(customer=customer)
     action = int(request.data['action'])
     product = int(request.data['product'])
     unit = int(request.data['unit']) * action
@@ -316,6 +319,16 @@ def customerOrder(request):
     return Response(
         orderD, status=http_status
     )
+    
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def cancelOrder(request):
+    order = int(request.data['order'])
+    models.Order.objects.filter(id=order).update(status=4)
+    return Response(status=200)
+
 
 def map_choice(choice, value):
     for i in choice:

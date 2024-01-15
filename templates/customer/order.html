@@ -6,12 +6,22 @@
         <h3 class="">
             [{item.invoice}]
         </h3>
-        <button type="button" class="btn btn-primary">
-            [{item.status}]
-        </button>
+        <div class="dropdown">
+            <button class="btn "
+                :class="{ 'disabled':item.status=='Cancelled','dropdown-toggle':item.status!='Cancelled','btn-danger':item.status!='Pending', 'btn-primary':item.status=='Pending' }"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                [{item.status}]
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#" @click="cancelOrder(item.id)">Cancel</a></li>
+            </ul>
+        </div>
+        {% comment %} <button type="button" class="btn btn-primary">
+
+        </button> {% endcomment %}
     </div>
     <div class="table-responsive text-nowrap overflow-y-scroll">
-        <table class="table table-borderless table-hover">
+        <table class="table  table-hover">
             <thead>
                 <tr>
                     <th>Name</th>
@@ -28,9 +38,7 @@
                         </strong>
                     </td>
                     <td>
-
-                        <span class="badge bg-label-dark me-1">[{product.quantity}]</span>
-
+                        <span class="badge bg-label-primary me-1">[{product.quantity}]</span>
                     </td>
                     <td>
                         [{product.unit_price}]
@@ -74,7 +82,53 @@
                 });
             },
             methods: {
+                cancelOrder(e) {
+                    Swal.fire({
+                        title: "Are you sure?",
+                        text: "You won't be cancel this order?",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#f00",
+                        cancelButtonColor: "#111",
+                        cancelButtonText: "Close",
+                        confirmButtonText: "Cancel this Order",
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const form_data = new FormData;
+                            form_data.append("csrfmiddlewaretoken", "{{ csrf_token }}");
+                            form_data.append("order", e);
 
+                            axios(
+                                {
+                                    method: 'post',
+                                    url: "{% url 'order-cancel-api' %}",
+                                    data: form_data
+                                }
+                            ).then((response) => {
+                                if (response.status == 200) {
+                                    axios(
+                                        {
+                                            method: 'get',
+                                            url: "{% url 'order-api' %}"
+                                        }
+                                    ).then((response) => {
+                                        if (response.status == 200) {
+                                            this.carts = response.data;
+                                        }
+                                    });
+                                    Swal.fire({
+                                        title: "Cancelled!",
+                                        text: "Your order has cancelled!",
+                                        icon: "success"
+                                    });
+                                }
+                            });
+
+
+                        }
+                    });
+
+                }
             }
         }
     );

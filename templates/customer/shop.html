@@ -11,7 +11,7 @@
         <form class="modal-content ">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="ShopCreateLabel">Modal title</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" ref="close-shop-modal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="row row-cols-1 mx-auto">
@@ -97,7 +97,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" @click="onSave($event)" class="btn btn-primary">Save changes</button>
+                <button type="submit" @click="onSave($event)" class="btn btn-primary">Create</button>
             </div>
         </form>
     </div>
@@ -119,20 +119,15 @@
         <div class="card">
             <h5 class="card-header">Shop</h5>
             <div class="card-body" v-if="!hasShop">
-                <div class="mb-3 col-12 mb-0">
-                    <div class="alert alert-warning">
-                        <h6 class="alert-heading fw-bold mb-1">Are you sure you want to delete your account?</h6>
-                        <p class="mb-0">Once you delete your account, there is no going back. Please be certain.</p>
-                    </div>
-                </div>
+
                 <form id="formAccountDeactivation" onsubmit="return false">
-                    
+
                     <button type="submit" data-bs-toggle="modal" data-bs-target="#ShopCreate"
-                        class="btn btn-danger deactivate-account">Create new Shop</button>
+                        class="btn btn-primary deactivate-account"><i class='bx-fw bx bx-plus'></i>Shop</button>
                 </form>
             </div>
             <div class="card-body" v-if="hasShop">
-                <a href="{% url 'shop-page' %}" class="btn btn-primary">Shop</a>
+                <a href="{% url 'shop-page' %}" class="btn btn-primary">Manage Shop</a>
             </div>
 
         </div>
@@ -174,7 +169,7 @@
                     district_list: [],
                     tambon_list: [],
 
-                    hasShop:false,
+                    hasShop: false,
 
 
 
@@ -184,18 +179,18 @@
             mounted() {
                 axios(
                     {
-                        method:"get",
-                        url:"{% url 'shop-data' %}"
+                        method: "get",
+                        url: "{% url 'shop-data' %}"
                     }
-                ).then((response)=>{
-                    if (response.status == 200){
-                        this.hasShop = true
+                ).then((response) => {
+                    if (response.status == 200) {
+                        this.hasShop = true;
                     }
                     else {
-                        this.hasShop = false
+                        this.hasShop = false;
                     }
 
-                })
+                });
 
                 axios(
                     {
@@ -314,6 +309,7 @@
                     }
 
                     if (isValid) {
+                        this.$refs['close-shop-modal'].click()
                         const data = {
                             area: this.area,
                             product_type: this.product_type,
@@ -345,7 +341,20 @@
                             }
                         )
                             .then((response) => {
-                                console.log(response.status);
+                                if (response.status == 201) {
+                                    Swal.fire({
+                                        title: "Successfully!",
+                                        text: "Shop created!",
+                                        icon: "success"
+                                    });
+                                }
+                                else {
+                                    Swal.fire({
+                                        title: "Error!",
+                                        text: "You has shop",
+                                        icon: "error"
+                                    });
+                                }
                             });
                     }
                 }
