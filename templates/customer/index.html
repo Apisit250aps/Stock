@@ -1,12 +1,54 @@
 {% extends 'customer/base.html' %}
 <!--  -->
 {% block content %}
+<!-- Button trigger modal -->
+
+<!-- Modal -->
+<div class="modal fade" id="filterProduct" tabindex="-1" aria-labelledby="filterProductLabel" aria-hidden="true">
+    <div class="modal-dialog        ">
+        <form class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="filterProductLabel">Modal title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row row-cols-2 mx-auto">
+                    <div class=" col mb-3">
+                        <label for="base-price" class="form-label">Base Price</label>
+                        <input type="number" class="form-control" id="base-price"
+                           >
+                    </div>
+                    <div class=" col mb-3">
+                        <label for="high-price" class="form-label">High Price</label>
+                        <input type="number" class="form-control" id="high-price"
+                           >
+                    </div>
+                </div>
+                <div class="row row-cols-1 mx-auto">
+                    <div class="col mb-3">
+                        <label for="category" class="form-label">Category</label>
+                        <select name="" id="category" class="form-select">
+                            <option value="">All</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <div class="card h-100">
+    [{ filter.keyword }]
     <div class="d-flex align-items-center justify-content-between card-header">
         <h1 class="">
             Products
         </h1>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filter">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filterProduct">
             <i class="bx bx-filter-alt"></i>
         </button>
     </div>
@@ -27,7 +69,7 @@
                     </td>
                     <td>
                         <span class="badge bg-label-primary me-1">[{item.shop}]</span>
-                        
+
                     </td>
 
                     <td>
@@ -57,8 +99,13 @@
                     layout: "index",
                     page: "dashboard",
 
-                    products: null
-
+                    products: null,
+                    filter:{
+                        keyword:"",
+                        base_price:0,
+                        high_price:0,
+                        category:0
+                    }
 
                 };
             },
@@ -85,7 +132,7 @@
                         {
                             method: 'post',
                             url: "{% url 'action-cart-api' %}",
-                            data:form_data
+                            data: form_data
                         }
                     ).then((response) => {
                         if (response.status == 201) {
@@ -97,7 +144,7 @@
                         }
                     });
 
-                }
+                },          
             }
         }
     );

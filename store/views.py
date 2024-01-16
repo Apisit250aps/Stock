@@ -42,6 +42,7 @@ from customer.serializers import (
     OrderSerializer,
     OutputDataSerializer,
     CustomerSerializer,
+    OutputInvoiceSerializer
     
 )
 
@@ -90,6 +91,37 @@ def inputInvoiceData(invoiceSerializer):
 
         inputDataQuery = models.InputData.objects.filter(invoice=invoice)
         inputDataSerializer = serializers.InputDataSerializer(
+            inputDataQuery, many=True)
+
+        inputDataData = []
+        for inp in inputDataSerializer.data:
+            product = int(inp['product'])
+            productQuery = models.Product.objects.get(id=product)
+            productSerializer = serializers.ProductSerializer(productQuery)
+            inp['product'] = productSerializer.data
+            cats = inp['product']['category']
+            inp['product']['category'] = models.ProductCategory.objects.get(
+                id=cats).name
+            inp['product']['shop'] = inv['shop']
+            inputDataData.append(inp)
+        inv['input_data'] = inputDataData
+
+        InvoiceData.append(inv)
+
+    return InvoiceData
+
+def outputInvoiceData(invoiceSerializer):
+    InvoiceData = []
+
+    for inv in invoiceSerializer.data:
+        invoice = int(inv['id'])
+        inv['shop'] = serializers.ShopSerializer(models.Shop.objects.get(id=int(inv['shop']))).data
+        inv['customer'] = CustomerSerializer(Customer.objects.get(id=int(inv['customer']))).data
+
+        
+
+        inputDataQuery = OutputData.objects.filter(invoice=invoice)
+        inputDataSerializer = OutputDataSerializer(
             inputDataQuery, many=True)
 
         inputDataData = []
@@ -368,6 +400,21 @@ def shopInvoice(request):
 
     return Response(status=status.HTTP_200_OK, data=InvoiceData)
 
+@csrf_exempt
+@api_view(["GET", ])
+@permission_classes((AllowAny,))
+def shopOutputInvoice(request):
+    user = User.objects.get(username=request.user.username)
+    shop = models.Shop.objects.get(user=user)
+
+    invoiceQuery = OutputInvoice.objects.filter(
+        shop=shop).order_by('-updated_at')
+    invoiceSerializer = OutputInvoiceSerializer(
+        invoiceQuery, many=True)
+
+    InvoiceData = outputInvoiceData(invoiceSerializer)
+
+    return Response(status=status.HTTP_200_OK, data=InvoiceData)
 
 @csrf_exempt
 @api_view(["GET", ])

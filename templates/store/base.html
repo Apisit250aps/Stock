@@ -185,7 +185,7 @@
               </a>
             </li> {% endcomment %}
             <!-- Layouts -->
-            <li class="menu-item">
+            <li class="menu-item" :class="{ 'active':layout=='index'&&page=='order'}">
               <a href="{% url 'order-shop-page' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-layout"></i>
                 <div data-i18n="Layouts">Orders</div>
@@ -213,7 +213,13 @@
             <li class="menu-item" :class="{ 'active':layout=='store'&&page=='invoices'}">
               <a href="{% url 'invoices-page' %}" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-receipt"></i>
-                <div data-i18n="User interface">Invoices</div>
+                <div data-i18n="User interface">Input Invoices</div>
+              </a>
+            </li>
+            <li class="menu-item" :class="{ 'active':layout=='store'&&page=='output'}">
+              <a href="{% url 'output-shop-page' %}" class="menu-link">
+                <i class="menu-icon tf-icons bx bx-receipt"></i>
+                <div data-i18n="User interface">Output Invoices</div>
               </a>
             </li>
 

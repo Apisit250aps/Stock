@@ -71,3 +71,8 @@ def shopPage(request):
 def orderShopPage(request):
     
     return render(request, 'store/order.html')
+
+@login_required()
+def outputShopPage(request):
+    
+    return render(request, 'store/output.html')

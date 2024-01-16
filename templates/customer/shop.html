@@ -127,7 +127,7 @@
                 </form>
             </div>
             <div class="card-body" v-if="hasShop">
-                <a href="{% url 'shop-page' %}" class="btn btn-primary">Manage Shop</a>
+                <a href="{% url 'order-shop-page' %}" class="btn btn-primary">Manage Shop</a>
             </div>
 
         </div>
@@ -347,6 +347,7 @@
                                         text: "Shop created!",
                                         icon: "success"
                                     });
+                                    location.reload()
                                 }
                                 else {
                                     Swal.fire({

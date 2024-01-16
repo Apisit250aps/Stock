@@ -26,3 +26,9 @@ class OutputDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.OutputData
         fields = "__all__"
+        
+    
+class OutputInvoiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.OutputInvoice
+        fields = "__all__"

@@ -42,4 +42,5 @@ urlpatterns = [
     path('store/shop', views.shopPage, name='shop-page'),
     path('store/category', views.categoryPage, name='category-page'),
     path('store/order', views.orderShopPage, name='order-shop-page'),
+    path('store/output', views.outputShopPage, name='output-shop-page'),
 ]
