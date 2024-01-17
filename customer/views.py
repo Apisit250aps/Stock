@@ -244,8 +244,6 @@ def checkout(request):
     customer = models.Customer.objects.get(user=user)
     cart = models.Cart.objects.get(customer=customer)
 
-
-
     product = request.data['product']
     product = json.loads(product)
     print(shop)
@@ -291,26 +289,29 @@ def customerOrder(request):
         customer=customer).order_by('order_status', '-id')
     orderS = serializers.OrderSerializer(orderQ, many=True).data
     orderD = []
-    
+
     for order in orderS:
         order = dict(order)
-        order['order_status'] = {"id":order['order_status'], "status":map_choice(models.ORDER_STATUS, order['order_status'])}
+        order['order_status'] = {"id": order['order_status'], "status": map_choice(
+            models.ORDER_STATUS, order['order_status'])}
         shop = Shop.objects.get(id=int(order['shop']))
         order['shop'] = ShopSerializer(shop).data
         order['customer'] = serializers.CustomerSerializer(customer).data
-        
+
         Order = models.Order.objects.get(id=order['id'])
-        
-        orderItem = serializers.OrderItemSerializer(models.OrderItem.objects.filter(order=Order), many=True).data
+
+        orderItem = serializers.OrderItemSerializer(
+            models.OrderItem.objects.filter(order=Order), many=True).data
         item = []
-        
+
         for i in orderItem:
             i = dict(i)
-            i['product'] = ProductSerializer(Product.objects.get(id=int(i['product']))).data
+            i['product'] = ProductSerializer(
+                Product.objects.get(id=int(i['product']))).data
             item.append(i)
-        
+
         order['item'] = item
-        
+
         orderD.append(order)
     return Response(
         orderD, status=http_status
@@ -322,17 +323,17 @@ def customerOrder(request):
 @permission_classes((AllowAny,))
 def orderStatus(request):
     order_status = []
-    
+
     for status in models.ORDER_STATUS:
         order_status.append(
             {
-                "status":status[1],
-                "id":status[0]
+                "status": status[1],
+                "id": status[0]
             }
         )
-    
-    
+
     return Response(order_status, status=200)
+
 
 @csrf_exempt
 @api_view(["POST"])
@@ -341,7 +342,6 @@ def cancelOrder(request):
     order = int(request.data['order'])
     models.Order.objects.filter(id=order).update(order_status=6)
     return Response(status=200)
-
 
 
 def map_choice(choice, value):

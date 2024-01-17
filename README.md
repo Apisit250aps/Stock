@@ -17,7 +17,9 @@
 ## คุณสมบัติของระบบ 
 
 ระบบ Marketplace มีคุณสมบัติดังต่อไปนี้ 
+- ผู้ใช้สมัคร และ ล็อกอินเข้าใช้งาน
 
+- มีระบบตะกร้าสินค้า
 
 - ผู้ซื้อสามารถสั่งซื้อสินค้าหรือบริการจากร้านขายได้ 
 
@@ -42,33 +44,37 @@
 - ผู้ขายสามารถดูคำสั่งซื้อได้ และ เปลี่ยนสถานะคำสั่งซื้อได้ 
 
 
-## รายละเอียดคุณสมบัติ 
-
-**ผู้ขาย**
-
-- ผู้ขายสามารถสมัครสมาชิกและเปิดร้านขายสินค้าหรือบริการได้ โดยจะต้องกรอกข้อมูลส่วนบุคคลและข้อมูลร้านขายให้ครบถ้วน 
-
-- ผู้ขายสามารถเพิ่มข้อมูลสินค้าหรือบริการลงในร้านของตัวเองได้ โดยจะต้องกรอกข้อมูลสินค้าหรือบริการให้ครบถ้วน เช่น ชื่อสินค้าหรือบริการ, รายละเอียดสินค้าหรือบริการ, รูปภาพสินค้าหรือบริการ, ราคาสินค้าหรือบริการ, เงื่อนไขการขายสินค้าหรือบริการ เป็นต้น 
-
-- ผู้ขายสามารถตั้งราคาและเงื่อนไขการขายสินค้าหรือบริการได้ โดยจะต้องเป็นไปตามนโยบายของทางระบบ 
-
-**ผู้ซื้อ** 
-
-- ผู้ซื้อสามารถค้นหาสินค้าหรือบริการที่ต้องการได้ โดยสามารถค้นหาจากชื่อสินค้าหรือบริการ, ประเภทสินค้าหรือบริการ, เงื่อนไขการขายสินค้าหรือบริการ เป็นต้น 
-
-- ผู้ซื้อสามารถสั่งซื้อสินค้าหรือบริการจากร้านขายได้ โดยจะต้องกรอกข้อมูลการจัดส่งสินค้าหรือบริการให้ครบถ้วน 
 
 ## Entity Relations Diagram (ERD)
 ```mermaid
 
 erDiagram 
 
+
+
 User {
     id int PK
-    username char
-    email char
-    password char
+    username char UK
+    password char 
+    first_name char 
+    last_name char
+}
 
+Customer {
+    id int PK
+    user int FK
+    code char UK
+    contact char 
+    tel char
+    fax char
+    email char
+    remark char
+    province char
+    district char
+    sub_district char
+    address char
+    zip char
+   
 }
 
 Shop {
@@ -76,8 +82,8 @@ Shop {
     user int FK
     area int FK
     product_type int FK
-    name char 
-    code char
+    code char 
+    name char
     contact char
     tel char
     fax char
@@ -88,26 +94,123 @@ Shop {
     sub_district char
     address char
     zip char
-    created_at timestamp
+
+}
+
+
+ProductType {
+    id int PK
+    name char
+    count char 
+    created_at  timestamp
     updated_at timestamp
 }
 
+Area {
+    id int PK
+    code char UK
+    name char
+    count int
+}
+
+Category {
+    id int PK
+    shop int FK
+    name char
+    count int
+}
+
+Product {
+    id int PK
+    shop int FK
+    category int FK
+    code char UK
+    name char
+    desc char
+    unit int
+    cost decimal
+    price decimal
+}
+
+InputInvoice {
+    id int PK
+    shop int FK
+    invoice_no char 
+    type int 
+    remark char
+}
+
+InputData {
+    id int PK
+    invoice int FK
+    product int FK
+    quantity  int 
+    unit_price decimal
+}
+
+Cart {
+    id int PK
+    customer int FK
+}
+
+CartItem {
+    id int PK 
+    product int FK 
+    unit int 
+}
+
+OutputInvoice {
+    id int PK
+    shop int FK 
+    customer int FK
+    invoice_no char
+    remark char
+    created_at  timestamp
+    updated_at timestamp
+}
+
+OutputData {
+    id int PK
+    invoice int FK
+    product int FK
+    quantity int 
+    unit_price decimal
+}
+
+Order {
+    customer int PK
+    shop int FK
+    order_code char
+    order_status int
+    created_at  timestamp
+    updated_at timestamp
+}
+
+OrderItem {
+    order int PK
+    product int FK
+    unit int 
+}
+
 User ||--|| Shop : has 
+User ||--|| Customer : has
+
+Shop ||--|| Area : has 
 Shop ||--|{ Product : have
 Shop ||--|{ Category : have
-Shop ||--|{ InputInvoice : have
 Shop ||--|{ Order : have
+Shop ||--|{ InputInvoice : have
+Shop ||--|{ OutputInvoice : have
 
 InputInvoice ||--|{ InputData : have
 InputData ||--|| Product : has
 
-User ||--|| Customer : has
 Customer ||--|{ OutputInvoice : have
 Customer ||--|{ Order : have
 Customer ||--|| Cart : has
 
 Cart ||--|{ CartItem : have
-
+CartItem ||--|| Product :"has"
 
 OutputInvoice ||--|{ OutputData : have
 OutputData ||--|| Product : has
@@ -115,7 +218,10 @@ OutputData ||--|| Product : has
 Product ||--|| Category : has
 ProductType ||--|{ Shop : have
 
-Order ||--|| OutputInvoice : has
+Order ||--|{ OrderItem : have
+OrderItem ||--|| Product : has
+
+
 
 ```
 
@@ -148,26 +254,27 @@ Order ||--|| OutputInvoice : has
 
 
 ### Shop
+
 | Field | Type  | Domain  |  Key |
-|  ---  |  ---  |   ---   |  --- |
+|  ---  | ---   |  ---    |  --- |
 | id  | INT | 11 | PK |   |
 | user | INT  |  (11) |  FK |
 | product_type | INT  |  (11) |  FK |
 | area  | INT  |  (11) |  FK  |
-| name  | CHAR   | (255)  |     |
-| code  | CHAR   | (6)  |     |
-| contact  | CHAR   | (255)  |     |
-| tel  | CHAR   | (10)  |     |
-| fax  | CHAR   | (10)  |     |
-| email  | CHAR   | (255)  |     |
-| remark  | TEXT   | ()  |     |
-| address  | TEXT   | ()  |     |
-| province  | CHAR   | (255)  |     |
-| district  | CHAR   | (255)  |     |
-| sub_district  | CHAR   | (255)  |     |
-| zip  | CHAR   | (5)  |     |
-| created_at  | TIMESTAMP   | ()  |     |
-| updated_at  | TIMESTAMP   | ()  |     |
+| name  | CHAR   | (255)  | -    |
+| code  | CHAR   | (6)  |  -   |
+| contact  | CHAR   | (255)  |  -   |
+| tel  | CHAR   | (10)  |  -   |
+| fax  | CHAR   | (10)  |  -   |
+| email  | CHAR   | (255)  |   -  |
+| remark  | TEXT   | ()  | -    |
+| address  | TEXT   | ()  | -    |
+| province  | CHAR   | (255)  |   -  |
+| district  | CHAR   | (255)  |   -  |
+| sub_district  | CHAR   | (255)  |  -   |
+| zip  | CHAR   | (5)  |   -  |
+| created_at  | TIMESTAMP   | ()  |   -  |
+| updated_at  | TIMESTAMP   | ()  |   -  |
 
 
 ### ProductCategory
@@ -175,19 +282,23 @@ Order ||--|| OutputInvoice : has
 |  ---  |  ---  |   ---   |  --- |
 | id  | INT | 11 | PK |   |
 | shop | INT  |  (11) | FK |
-| name | CHAR  |  (255) |  |
-| count  | INT  |  (11) |  |
+| name | CHAR  |  (255) | - |
+| count  | INT  |  (11) | - |
 
 ### Product
 | Field | Type  | Domain  |  Key |
 |  ---  |  ---  |   ---   |  --- |
 | id  | INT | 11 | PK |   |
 | shop | INT  |  (11) | FK |
-| name | CHAR  |  (255) |  |
-| desc | TEXT  |  () |  |
-| price  | DECIMAL   | (9, 2)  |     |
-| cost  | DECIMAL   | (9, 2)  |     |
-| unit | INT  |  (11) |  |
+| category | INT  |  (11) | FK |
+| code | CHAR  |  (8) | - |
+| name | CHAR  |  (255) | - |
+| desc | TEXT  |  () | - |
+| unit | INT  |  (11) | - |
+| price  | DECIMAL   | (9, 2)  | -    |
+| cost  | DECIMAL   | (9, 2)  |  -   |
+| created_at  | TIMESTAMP   | ()  |   -  |
+| updated_at  | TIMESTAMP   | ()  |   -  |
 
 
 ### InputInvoice
@@ -195,11 +306,11 @@ Order ||--|| OutputInvoice : has
 |  ---  |  ---  |   ---   |  --- |
 | id  | INT | 11 | PK |   |
 | shop | INT  |  (11) | FK |
-| invoice_no  | INT  |  (6) |  |
-| type  | INT  |  (11) |  |
-| remark  | TEXT   | ()  |     |
-| created_at  | TIMESTAMP   | ()  |     |
-| updated_at  | TIMESTAMP   | ()  |     |
+| invoice_no  | INT  |  (16) | - |
+| type  | INT  |  (11) | - |
+| remark  | TEXT   | ()  |  -   |
+| created_at  | TIMESTAMP   | ()  |  -   |
+| updated_at  | TIMESTAMP   | ()  |   -  |
 
 
 ### InputData
@@ -208,7 +319,95 @@ Order ||--|| OutputInvoice : has
 | id  | INT | 11 | PK |   |
 | shop | INT  |  (11) | FK |
 | invoice  | INT  |  (11) | FK |
-| quantity  | INT   | (11)  |     |
-| unit_price  | DECIMAL   | (9, 2)  |     |
-| created_at  | TIMESTAMP   | ()  |     |
-| updated_at  | TIMESTAMP   | ()  |     |
+| quantity  | INT   | (11)  |   -  |
+| unit_price  | DECIMAL   | (9, 2)  |   -  |
+| created_at  | TIMESTAMP   | ()  |   -  |
+| updated_at  | TIMESTAMP   | ()  |    - |
+
+
+### Customer
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id |   INT  |    (11)  |    PK   |
+| user |  INT   |   (11)   |   FK    |
+| code |   CHAR  |  (16)    |  FK     |
+| contact |  CHAR   |  (255)    |    -   |
+| tel |   CHAR  |   (10)   |    -   |
+| fax |   CHAR  |    (10)  | -      |
+| email |   CHAR  |    (255)  |   -    |
+| remark |  TEXT   |   ()   |   -    |
+| province |  CHAR   |  (255)    |   -    |
+| district |   CHAR  |  (255)    |   -    |
+| sub_district |   CHAR  |   (255)   |     -  |
+| address |   TEXT  |   ()   |     -  |
+| zip |  CHAR   |  (5)    |    -  |
+| created_at |  TIMESTAMP   |  ()    |   -    |
+| updated_at | TIMESTAMP    | ()     |    -   |
+
+
+### Cart
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id | INT | (11) | PK |
+| customer | INT | (11) | FK |
+
+### CartItem
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id | INT | (11) | PK |
+| cart | INT | (11)  |  FK  |
+| product | INT | (11)  |  FK  |
+| unit | INT | (11)  |  -  |
+
+
+### Oder
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id | INT | (11) | PK |
+|  customer  |   INT  |   (11)   |  FK    |
+|  shop  |  INT   |   (11)   |   FK   |
+|  order_code  |  CHAR   |   (9)   |   -   |
+|  order_status  | INT    |   (11)   |   -   |
+| created_at |  TIMESTAMP   |  ()    |    -   |
+| updated_at | TIMESTAMP    | ()     |    -   |
+
+
+### OderItem
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id | INT | (11) | PK |
+|  order  |  INT  | (11)  |  FK  |
+|  product  |  INT  | (11)  |  FK  |
+|  unit  |  INT  | (11)  |  -  |
+
+
+
+### OutputInvoice
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id | INT | (11) | PK |
+|  shop  |   INT  |  (11)   |   FK |
+|  customer  |   INT  |  (11)   |  FK  |
+|  invoice_no  |   CHAR  |  (16)   |  -  |
+|  remark  |   TEXT  |  ()   |  -  |
+| created_at |  TIMESTAMP   |  ()    |   -    |
+| updated_at | TIMESTAMP    | ()     |   -    |
+
+
+
+### OutputData
+
+| Field | Type  | Domain  |  Key |
+|  ---  |  ---  |   ---   |  --- |
+| id | INT | (11) | PK |
+|  invoice  |  INT    | ( 11) |  FK    |
+|  product  |   INT   | (11 ) |  FK    |
+|  quantity  |    INT  | (11 ) | FK     |
+|  unit_price  |  DECIMAL    | (9,2 ) |   -   |
+ 
+
+
+
+
+## Interface
+### หน้าหลัก
