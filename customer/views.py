@@ -1,3 +1,4 @@
+import random
 from django.db.models import Q, F
 from django.contrib.auth.models import User
 from . import models
@@ -20,7 +21,8 @@ from store.models import (
 
 from store.serializers import (
     ProductCategorySerializer,
-    ProductSerializer
+    ProductSerializer,
+    ShopSerializer,
 )
 
 from django.contrib.staticfiles import finders
@@ -165,7 +167,7 @@ def actionCart(request):
     customer = models.Customer.objects.get(user=user)
     if models.Cart.objects.filter(customer=customer).count() != 0:
         cart = models.Cart.objects.get(customer=customer)
-    else :
+    else:
         cart = models.Cart.objects.create(customer=customer)
     action = int(request.data['action'])
     product = int(request.data['product'])
@@ -218,10 +220,17 @@ def cartList(request):
         cartArray.append({
             "shop": i,
             "products": o})
-    
+
     cartArray
 
     return Response(status=http_status, data=cartArray)
+
+
+def order_code():
+    code = "{0:09}".format(random.randint(100000000, 999999999))
+    if models.Order.objects.filter(order_code=code).count() != 0:
+        order_code()
+    return code
 
 
 @csrf_exempt
@@ -234,23 +243,19 @@ def checkout(request):
     user = User.objects.get(username=request.user.username)
     customer = models.Customer.objects.get(user=user)
     cart = models.Cart.objects.get(customer=customer)
-    
-    
+
+
 
     product = request.data['product']
     product = json.loads(product)
-
+    print(shop)
     print(type(product))
-    try :
-        
-        invoice_no = invoice_code()
-
-        invoice = models.OutputInvoice.objects.create(
-            shop=shop,
+    try:
+        order = models.Order.objects.create(
             customer=customer,
-            invoice_no=invoice_no,
-            discount=0,
-            remark="-"
+            shop=shop,
+            order_code=order_code(),
+            order_status=1
         )
 
         for item in product.values():
@@ -258,28 +263,17 @@ def checkout(request):
             product = Product.objects.get(id=int(item['product']))
             unit = item['value']
 
-            output_data = models.OutputData.objects.create(
-                invoice=invoice,
+            models.OrderItem.objects.create(
+                order=order,
                 product=product,
-                quantity=unit,
-                unit_price=product.price,
-                discount=0
+                unit=unit
             )
-            
-            if output_data:
-                models.CartItem.objects.filter(
-                    cart=cart,
-                    product=product
-                ).delete()
-            
-        models.Order.objects.create(
-            customer=customer,
-            shop=shop,
-            invoice=invoice,
-            status=1
-        )
+
+            models.CartItem.objects.filter(cart=cart, product=product).delete()
+
         http_status = status.HTTP_201_CREATED
-    except :
+    except IOError as err:
+        print(err)
         http_status = status.HTTP_500_INTERNAL_SERVER_ERROR
 
     return Response(status=http_status)
@@ -293,41 +287,61 @@ def customerOrder(request):
     user = User.objects.get(username=request.user.username)
     customer = models.Customer.objects.get(user=user)
 
-    orderQ = models.Order.objects.filter(customer=customer).order_by('-status', '-id')
+    orderQ = models.Order.objects.filter(
+        customer=customer).order_by('order_status', '-id')
     orderS = serializers.OrderSerializer(orderQ, many=True).data
     orderD = []
     
     for order in orderS:
         order = dict(order)
+        order['order_status'] = {"id":order['order_status'], "status":map_choice(models.ORDER_STATUS, order['order_status'])}
         shop = Shop.objects.get(id=int(order['shop']))
-        invoice = models.OutputInvoice.objects.get(id=int(order['invoice']))
-        data = []
-        output = serializers.OutputDataSerializer(models.OutputData.objects.filter(invoice=invoice), many=True).data
-        for pro in output:
-            pro = dict(pro)
-            pro['product']  = Product.objects.get(id=int(pro['product'])).name
-            data.append(pro)
-            
-        # output['product'] = Product.objects.get(id=int(output['product'])).name
-        order['status'] = map_choice(models.ORDER_STATUS, order['status'])
-        order['shop'] = shop.name
-        order['invoice'] = invoice.invoice_no
+        order['shop'] = ShopSerializer(shop).data
+        order['customer'] = serializers.CustomerSerializer(customer).data
         
-        order['product'] = data
+        Order = models.Order.objects.get(id=order['id'])
+        
+        orderItem = serializers.OrderItemSerializer(models.OrderItem.objects.filter(order=Order), many=True).data
+        item = []
+        
+        for i in orderItem:
+            i = dict(i)
+            i['product'] = ProductSerializer(Product.objects.get(id=int(i['product']))).data
+            item.append(i)
+        
+        order['item'] = item
+        
         orderD.append(order)
-    
     return Response(
         orderD, status=http_status
     )
+
+
+@csrf_exempt
+@api_view(["GET"])
+@permission_classes((AllowAny,))
+def orderStatus(request):
+    order_status = []
     
+    for status in models.ORDER_STATUS:
+        order_status.append(
+            {
+                "status":status[1],
+                "id":status[0]
+            }
+        )
+    
+    
+    return Response(order_status, status=200)
 
 @csrf_exempt
 @api_view(["POST"])
 @permission_classes((AllowAny,))
 def cancelOrder(request):
     order = int(request.data['order'])
-    models.Order.objects.filter(id=order).update(status=4)
+    models.Order.objects.filter(id=order).update(order_status=6)
     return Response(status=200)
+
 
 
 def map_choice(choice, value):

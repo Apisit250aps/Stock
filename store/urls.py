@@ -53,4 +53,5 @@ urlpatterns = [
 
 
     path('product-type', views.getProductType),
+    path('order-action', views.orderActions, name='order-action-api'),
 ]

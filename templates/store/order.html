@@ -4,11 +4,19 @@
 <div class="card mb-3" v-for="(item, index) in carts" :key="index">
     <div class="d-flex align-items-center justify-content-between card-header">
         <h3 class="">
-            [{item.invoice}]
+            [{item.order_code}]
         </h3>
-        <button type="button" class="btn btn-primary">
-            [{item.status}]
-        </button>
+        <div class="dropdown">
+            <button class="btn "
+                :class="{ 'disabled':item.order_status.id>4,'dropdown-toggle':item.order_status.id<=4,'btn-danger':item.order_status.id>4, 'btn-primary':item.order_status.id<=4 }"
+                type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                [{item.order_status.status}]
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" v-for="(i, index) in orStatus" @click="orderAction(item.id, i.id)"
+                        :key="index" href="#">[{i.status }]</a></li>
+            </ul>
+        </div>
     </div>
     <div class="table-responsive text-nowrap overflow-y-scroll">
         <table class="table table-borderless table-hover">
@@ -21,22 +29,22 @@
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(product, id) in item.product" :key="id">
+                <tr v-for="(product, id) in item.item" :key="id">
                     <td><i class="fab fa-angular fa-lg text-danger me-3"></i>
                         <strong>
-                            [{ product.product}]
+                            [{ product.product.name}]
                         </strong>
                     </td>
                     <td>
 
-                        <span class="badge bg-label-dark me-1">[{product.quantity}]</span>
+                        <span class="badge bg-label-dark me-1">[{product.unit}]</span>
 
                     </td>
                     <td>
-                        [{product.unit_price}]
+                        [{product.product.price}] ฿
                     </td>
                     <td>
-                        [{product.unit_price * product.quantity}]
+                        [{product.product.price * product.unit}] ฿
                     </td>
                 </tr>
             </tbody>
@@ -56,7 +64,8 @@
                     layout: "index",
                     page: "order",
 
-                    carts: null
+                    carts: null,
+                    orStatus: null
 
 
                 };
@@ -72,9 +81,45 @@
                         this.carts = response.data;
                     }
                 });
+                axios(
+                    {
+                        method: 'get',
+                        url: "{% url 'order-status-list-api' %}"
+                    }
+                ).then((response) => {
+                    if (response.status == 200) {
+                        this.orStatus = response.data;
+                    }
+                });
             },
             methods: {
-
+                orderAction(order, status) {
+                    const form_data = new FormData;
+                    form_data.append("csrfmiddlewaretoken", "{{csrf_token}}");
+                    form_data.append("order", order);
+                    form_data.append("status", status);
+                    axios(
+                        {
+                            method: "post",
+                            url: "{% url 'order-action-api' %}",
+                            data: form_data
+                        }
+                    )
+                        .then((response) => {
+                            setTimeout(() => {
+                                axios(
+                                    {
+                                        method: 'get',
+                                        url: "{% url 'order-shop-api' %}"
+                                    }
+                                ).then((response) => {
+                                    if (response.status == 200) {
+                                        this.carts = response.data;
+                                    }
+                                });
+                            }, 1000);
+                        });
+                }
             }
         }
     );

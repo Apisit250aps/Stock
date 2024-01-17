@@ -11,9 +11,9 @@ ORDER_STATUS = (
     (1, "Pending"),
     (2, "Processing"),
     (3, "Completed"),
-    (4, "Cancelled"),
+    (4, "Shipped"),
+    (6, "Cancelled"),
     (5, "Failed"),
-    (6, "Shipped"),
     (7, "Delivered"),
     (8, "Refunded"),
 )
@@ -94,11 +94,21 @@ class OutputData(models.Model):
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE)
-    invoice = models.ForeignKey(OutputInvoice, on_delete=models.CASCADE)
-    status = models.IntegerField(choices=ORDER_STATUS)
-
+    order_code = models.CharField(max_length=12)
+    order_status = models.IntegerField(choices=ORDER_STATUS)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.invoice.invoice_no
+        return self.customer.user.username
+
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    unit = models.IntegerField()
+
+    def __str__(self):
+        return self.order.order_code
+    

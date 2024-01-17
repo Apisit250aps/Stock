@@ -31,6 +31,7 @@ from .models import (
 from customer.models import (
     ORDER_STATUS,
     Order,
+    OrderItem,
     Customer,
     OutputData,
     OutputInvoice,
@@ -40,9 +41,10 @@ from customer.models import (
 
 from customer.serializers import (
     OrderSerializer,
+    OrderItemSerializer,
     OutputDataSerializer,
+    OutputInvoiceSerializer,
     CustomerSerializer,
-    OutputInvoiceSerializer
     
 )
 
@@ -578,34 +580,76 @@ def allProduct(request):
 def shopOrder(request):
     http_status = status.HTTP_200_OK
     user = User.objects.get(username=request.user.username)
-    shop = models.Shop.objects.get(user=user)
+    shopName = models.Shop.objects.get(user=user)
 
-    orderQ = Order.objects.filter(shop=shop).order_by('-status', '-id')
+    orderQ = Order.objects.filter(
+        shop=shopName).order_by('order_status', '-id')
     orderS = OrderSerializer(orderQ, many=True).data
     orderD = []
     
     for order in orderS:
         order = dict(order)
-        customer = Customer.objects.get(id=int(order['customer']))
-        invoice = OutputInvoice.objects.get(id=int(order['invoice']))
-        data = []
-        output = OutputDataSerializer(OutputData.objects.filter(invoice=invoice), many=True).data
-        for pro in output:
-            pro = dict(pro)
-            pro['product']  = models.Product.objects.get(id=int(pro['product'])).name
-            data.append(pro)
-            
-        # output['product'] = Product.objects.get(id=int(output['product'])).name
-        order['status'] = map_choice(ORDER_STATUS, order['status'])
-        order['customer'] = CustomerSerializer(customer).data
-        order['invoice'] = invoice.invoice_no
-        
-        order['product'] = data
-        orderD.append(order)
+        order['order_status'] = {"id":order['order_status'], "status":map_choice(ORDER_STATUS, order['order_status'])}
+        shop = models.Shop.objects.get(id=int(order['shop']))
+        order['shop'] = serializers.ShopSerializer(shop).data
+        order['customer'] = CustomerSerializer(Customer.objects.get(id=int(order['customer']))).data
+        Orders = Order.objects.get(id=order['id'])
     
+        orderItem = OrderItemSerializer(OrderItem.objects.filter(order=Orders), many=True).data
+        item = []
+        
+        for i in orderItem:
+            i = dict(i)
+            i['product'] = serializers.ProductSerializer(models.Product.objects.get(id=int(i['product']))).data
+            item.append(i)
+        
+        order['item'] = item
+        
+        orderD.append(order)
     return Response(
         orderD, status=http_status
     )
+
+
+@csrf_exempt
+@api_view(["POST"])
+@permission_classes((AllowAny,))
+def orderActions(request):
+    order = Order.objects.get(id=int(request.data['order']))
+    status = int(request.data['status'])
+    
+    if status == 2:
+        if order.order_status != 2:
+            
+            order_item = OrderItem.objects.filter(order=order)
+            customer = Customer.objects.get(id=int(order.customer.id))
+            shop = models.Shop.objects.get(id=int(order.shop.id))
+            invoice = OutputInvoice.objects.create(
+                shop=shop,
+                customer=customer,
+                invoice_no=invoice_code(),
+            )
+            for item in order_item:
+                product = models.Product.objects.get(id=int(item.product.id))
+                unit = item.unit
+                OutputData.objects.create(
+                    invoice=invoice,
+                    product=product,
+                    quantity=unit,
+                    unit_price=product.price,
+                    discount=0
+                )
+        
+        Order.objects.filter(id=order.id).update(order_status=status)
+    else :
+        Order.objects.filter(id=order.id).update(order_status=status)
+    
+    return Response(status=200)
+    
+    
+    
+
+
 
 
 def map_choice(choice, value):

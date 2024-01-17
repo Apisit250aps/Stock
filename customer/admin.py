@@ -17,7 +17,11 @@ class  CartAdmin(admin.ModelAdmin):
 @admin.register(models.Order)
 class  OrderAdmin(admin.ModelAdmin):
     list_display = [
-        'customer',
-        'status',
-        'invoice'
+        'customer'
+    ]
+    
+@admin.register(models.OrderItem)
+class  OrderItemAdmin(admin.ModelAdmin):
+    list_display = [
+        'order'
     ]

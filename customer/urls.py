@@ -15,5 +15,8 @@ urlpatterns = [
     path('checkout', api.checkout, name='check-out-api'),
     path('order', api.customerOrder, name='order-api'),
     path('order/cancel', api.cancelOrder, name='order-cancel-api'),
+    
+    
+    path('get/order/status/list', api.orderStatus, name='order-status-list-api'),
 
 ]
