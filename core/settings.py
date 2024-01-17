@@ -90,23 +90,23 @@ WSGI_APPLICATION = 'core.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "stock_dev_5",
-#         "USER": "postgres",
-#         "PASSWORD": "apisit250",
-#         "HOST": "127.0.0.1",
-#         "PORT": "5432",
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "stock_dev_6",
+        "USER": "postgres",
+        "PASSWORD": "apisit250",
+        "HOST": "127.0.0.1",
+        "PORT": "5432",
+    }
+}
 
 
 # Password validation

@@ -165,10 +165,9 @@ def actionCart(request):
     http_status = status.HTTP_200_OK
     user = User.objects.get(username=request.user.username)
     customer = models.Customer.objects.get(user=user)
-    if models.Cart.objects.filter(customer=customer).count() != 0:
-        cart = models.Cart.objects.get(customer=customer)
-    else:
-        cart = models.Cart.objects.create(customer=customer)
+    
+    cart = models.Cart.objects.get(customer=customer)
+    
     action = int(request.data['action'])
     product = int(request.data['product'])
     unit = int(request.data['unit']) * action

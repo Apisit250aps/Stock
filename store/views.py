@@ -94,7 +94,7 @@ def inputInvoiceData(invoiceSerializer):
         inputDataQuery = models.InputData.objects.filter(invoice=invoice)
         inputDataSerializer = serializers.InputDataSerializer(
             inputDataQuery, many=True)
-
+        inv['total'] = 0
         inputDataData = []
         for inp in inputDataSerializer.data:
             product = int(inp['product'])
@@ -102,6 +102,7 @@ def inputInvoiceData(invoiceSerializer):
             productSerializer = serializers.ProductSerializer(productQuery)
             inp['product'] = productSerializer.data
             cats = inp['product']['category']
+            inv['total'] += int(inp['quantity']) * float(inp['unit_price'])
             inp['product']['category'] = models.ProductCategory.objects.get(
                 id=cats).name
             inp['product']['shop'] = inv['shop']
@@ -125,13 +126,14 @@ def outputInvoiceData(invoiceSerializer):
         inputDataQuery = OutputData.objects.filter(invoice=invoice)
         inputDataSerializer = OutputDataSerializer(
             inputDataQuery, many=True)
-
+        inv['total'] = 0
         inputDataData = []
         for inp in inputDataSerializer.data:
             product = int(inp['product'])
             productQuery = models.Product.objects.get(id=product)
             productSerializer = serializers.ProductSerializer(productQuery)
             inp['product'] = productSerializer.data
+            inv['total'] += int(inp['quantity']) * float(inp['unit_price'])
             cats = inp['product']['category']
             inp['product']['category'] = models.ProductCategory.objects.get(
                 id=cats).name

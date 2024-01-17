@@ -14,27 +14,27 @@
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h3 class="modal-title " id="infoModalLabel">Invoice</h3>
+                <h3 class="modal-title " id="infoModalLabel">Invoice : [{invoiceSelect.invoice_no}] <br> <span class="badge bg-label-primary me-1">[{new Date(invoiceSelect.shop.created_at).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}]</span> </h3>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body ">
                 <hr>
                 <div class="row mx-auto g-0">
                     <div class="col-6">
-                        <h3 class="">[{invoiceSelect.shop.name}]</h3>
+                        <h3 class="">[{invoiceSelect.shop.name}] </h3>
                         <h5>
                             <span>[{invoiceSelect.shop.address}], </span>
                             <span>ต. [{invoiceSelect.shop.sub_district}], </span>
                             <span>อ. [{invoiceSelect.shop.district}], </span>
                             <span>จ. [{invoiceSelect.shop.province}], </span>
                             <span> 33240 </span>
-                        </h5>  
+                        </h5>
                         <h5>
                             <span> [{invoiceSelect.shop.tel}], </span>
-                        </h5>    
+                        </h5>
                         <h5>
                             <span> [{invoiceSelect.shop.fex}], </span>
-                        </h5>                
+                        </h5>
                     </div>
                     <div class="col-2">
 
@@ -48,13 +48,13 @@
                             <span>อ. [{invoiceSelect.customer.district}], </span>
                             <span>จ. [{invoiceSelect.customer.province}], </span>
                             <span> 33240 </span>
-                        </h5>  
+                        </h5>
                         <h5>
                             <span> [{invoiceSelect.customer.tel}], </span>
-                        </h5>    
+                        </h5>
                         <h5>
                             <span> [{invoiceSelect.customer.fex}], </span>
-                        </h5>     
+                        </h5>
                     </div>
                 </div>
                 <div class="row mx-auto g-0">
@@ -70,17 +70,30 @@
                                 <th>total</th>
                             </thead>
                             <tbody>
-                                
+
                                 <tr v-for="(item, index) of invoiceSelect.input_data" :key="index">
                                     <td>P-[{item.product.code}]</td>
                                     <td class="text-nowrap">[{item.product.name}] </td>
-                                    <td>[{item.product.unit}] </td>
+                                    <td>[{item.quantity}] </td>
                                     <td>[{item.product.price}] ฿</td>
                                     <td>[{item.product.cost}] ฿</td>
                                     <td>[{item.discount}] ฿</td>
                                     <td>[{(item.product.price-item.product.cost)*item.product.unit}] ฿</td>
                                 </tr>
                             </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mx-auto">
+                    <div class="col-8"></div>
+                    <div class="col-4">
+                        <table class="table table-bordered">
+                            <tr>
+                                <th>
+                                    Total
+                                </th>
+                                <td colspan="2" class="text-end">[{invoiceSelect.total}] ฿</td>
+                            </tr>
                         </table>
                     </div>
                 </div>
@@ -139,7 +152,7 @@
 <div class="card h-100">
     <div class="d-flex align-items-center justify-content-between card-header">
         <h1 class="">
-            Invoices 
+            Invoices
         </h1>
         <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filter">
             <i class="bx bx-filter-alt"></i>
@@ -150,7 +163,7 @@
             <thead>
                 <tr>
                     <th>invoice no</th>
-                
+
                     <th>type</th>
                     <th>Actions</th>
                 </tr>
@@ -200,94 +213,134 @@
                         type: 0,
                     },
                     invoiceSelect: {
-                        "id": 21,
-                        "invoice_no": "202401160001",
+                        "id": 1,
+                        "invoice_no": "202401170003",
                         "discount": "0.00",
-                        "remark": "-",
-                        "created_at": "2024-01-16T10:06:57.120454+07:00",
-                        "updated_at": "2024-01-16T10:06:57.120454+07:00",
+                        "remark": null,
+                        "created_at": "2024-01-17T16:57:23.240474+07:00",
+                        "updated_at": "2024-01-17T16:57:23.240474+07:00",
                         "shop": {
-                            "id": 11,
+                            "id": 1,
                             "name": "IHAVERAM",
-                            "code": "012522",
+                            "code": "043629",
                             "contact": "Apisit Saithong",
                             "tel": "0610575203",
                             "fax": "-",
                             "email": "aps.apisit250@gmail.com",
                             "remark": "-",
                             "province": "ศรีสะเกษ",
-                            "district": "อำเภอศรีรัตนะ",
-                            "sub_district": "เสื่องข้าว",
-                            "address": "111/6",
-                            "zip": "33240",
-                            "created_at": "2024-01-15T16:38:42.259910+07:00",
-                            "updated_at": "2024-01-15T16:38:42.259910+07:00",
-                            "user": 16,
-                            "area": 3,
-                            "product_type": 3
+                            "district": "อำเภอเมืองศรีสะเกษ",
+                            "sub_district": "โพธิ์",
+                            "address": "-",
+                            "zip": "33000",
+                            "created_at": "2024-01-17T16:49:19.097826+07:00",
+                            "updated_at": "2024-01-17T16:49:19.097826+07:00",
+                            "user": 1,
+                            "area": 1,
+                            "product_type": 1
                         },
                         "customer": {
-                            "id": 7,
-                            "code": "000000",
+                            "id": 2,
+                            "code": "063776",
                             "contact": "Apisit Saithong",
                             "tel": "-",
                             "fax": "-",
-                            "email": "aps.apisit250@gmail.com",
+                            "email": "stu6512732111@sskru.ac.th",
                             "remark": "-",
-                            "province": "-",
-                            "district": "-",
-                            "sub_district": "-",
+                            "province": "บุรีรัมย์",
+                            "district": "อำเภอชำนิ",
+                            "sub_district": "หนองปล่อง",
                             "address": "-",
-                            "zip": "-",
-                            "created_at": "2024-01-15T16:33:32.243567+07:00",
-                            "updated_at": "2024-01-15T16:33:32.243567+07:00",
-                            "user": 16
+                            "zip": "30000",
+                            "created_at": "2024-01-17T16:53:10.595509+07:00",
+                            "updated_at": "2024-01-17T16:53:10.595509+07:00",
+                            "user": 2
                         },
                         "input_data": [
                             {
-                                "id": 27,
+                                "id": 1,
                                 "quantity": 1,
-                                "unit_price": "2600.00",
+                                "unit_price": "1820.00",
                                 "discount": "0.00",
-                                "created_at": "2024-01-16T10:06:57.131504+07:00",
-                                "updated_at": "2024-01-16T10:06:57.131504+07:00",
-                                "invoice": 21,
+                                "created_at": "2024-01-17T16:57:23.250473+07:00",
+                                "updated_at": "2024-01-17T16:57:23.250473+07:00",
+                                "invoice": 1,
                                 "product": {
-                                    "id": 8,
-                                    "code": "1160002",
-                                    "name": "CPU AMD AM4 RYZEN 3 3200G",
-                                    "desc": "3.6 GHz / Cores 4 / Threads 4 / Radeon Vega 8 Graphics",
-                                    "unit": 300,
-                                    "cost": "1999.00",
-                                    "price": "2600.00",
-                                    "created_at": "2024-01-15T16:41:56.680407+07:00",
-                                    "updated_at": "2024-01-15T16:41:56.680407+07:00",
+                                    "id": 2,
+                                    "code": "110002",
+                                    "name": "CPU AMD AM4 ATHLON 3000G (NEXT)",
+                                    "desc": "3.5 GHz / Cores 2 / Threads 4 / Radeon Vega 3 Graphics",
+                                    "unit": 150,
+                                    "cost": "1590.00",
+                                    "price": "1820.00",
+                                    "created_at": "2024-01-17T16:52:06.693597+07:00",
+                                    "updated_at": "2024-01-17T16:52:06.693597+07:00",
                                     "shop": {
-                                        "id": 11,
+                                        "id": 1,
                                         "name": "IHAVERAM",
-                                        "code": "012522",
+                                        "code": "043629",
                                         "contact": "Apisit Saithong",
                                         "tel": "0610575203",
                                         "fax": "-",
                                         "email": "aps.apisit250@gmail.com",
                                         "remark": "-",
                                         "province": "ศรีสะเกษ",
-                                        "district": "อำเภอศรีรัตนะ",
-                                        "sub_district": "เสื่องข้าว",
-                                        "address": "111/6",
-                                        "zip": "33240",
-                                        "created_at": "2024-01-15T16:38:42.259910+07:00",
-                                        "updated_at": "2024-01-15T16:38:42.259910+07:00",
-                                        "user": 16,
-                                        "area": 3,
-                                        "product_type": 3
+                                        "district": "อำเภอเมืองศรีสะเกษ",
+                                        "sub_district": "โพธิ์",
+                                        "address": "-",
+                                        "zip": "33000",
+                                        "created_at": "2024-01-17T16:49:19.097826+07:00",
+                                        "updated_at": "2024-01-17T16:49:19.097826+07:00",
+                                        "user": 1,
+                                        "area": 1,
+                                        "product_type": 1
                                     },
                                     "category": "CPU"
                                 }
                             },
-                            
+                            {
+                                "id": 2,
+                                "quantity": 1,
+                                "unit_price": "750.00",
+                                "discount": "0.00",
+                                "created_at": "2024-01-17T16:57:23.253473+07:00",
+                                "updated_at": "2024-01-17T16:57:23.253473+07:00",
+                                "invoice": 1,
+                                "product": {
+                                    "id": 3,
+                                    "code": "120001",
+                                    "name": "RAM DDR4(2666) 8GB KINGSTON FURY BEAST (KF426C16BB/8)",
+                                    "desc": "DDR4 / Bus 2666 / PC4 21300 / 8GB (8GBX1) / CL16 / Intel / AMD",
+                                    "unit": 200,
+                                    "cost": "690.00",
+                                    "price": "750.00",
+                                    "created_at": "2024-01-17T16:52:06.696596+07:00",
+                                    "updated_at": "2024-01-17T16:52:06.696596+07:00",
+                                    "shop": {
+                                        "id": 1,
+                                        "name": "IHAVERAM",
+                                        "code": "043629",
+                                        "contact": "Apisit Saithong",
+                                        "tel": "0610575203",
+                                        "fax": "-",
+                                        "email": "aps.apisit250@gmail.com",
+                                        "remark": "-",
+                                        "province": "ศรีสะเกษ",
+                                        "district": "อำเภอเมืองศรีสะเกษ",
+                                        "sub_district": "โพธิ์",
+                                        "address": "-",
+                                        "zip": "33000",
+                                        "created_at": "2024-01-17T16:49:19.097826+07:00",
+                                        "updated_at": "2024-01-17T16:49:19.097826+07:00",
+                                        "user": 1,
+                                        "area": 1,
+                                        "product_type": 1
+                                    },
+                                    "category": "RAM"
+                                }
+                            }
                         ]
-                    },
+                    }
                 };
             },
             async mounted() {
