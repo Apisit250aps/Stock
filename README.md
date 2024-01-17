@@ -360,7 +360,7 @@ OrderItem ||--|| Product : has
 | unit | INT | (11)  |  -  |
 
 
-### Oder
+### Order
 | Field | Type  | Domain  |  Key |
 |  ---  |  ---  |   ---   |  --- |
 | id | INT | (11) | PK |
@@ -372,7 +372,7 @@ OrderItem ||--|| Product : has
 | updated_at | TIMESTAMP    | ()     |    -   |
 
 
-### OderItem
+### OrderItem
 | Field | Type  | Domain  |  Key |
 |  ---  |  ---  |   ---   |  --- |
 | id | INT | (11) | PK |
