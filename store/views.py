@@ -641,6 +641,7 @@ def orderActions(request):
                     unit_price=product.price,
                     discount=0
                 )
+                models.Product.objects.filter(id=int(product.id)).update(unit=F('unit')-unit)
         
         Order.objects.filter(id=order.id).update(order_status=status)
     else :

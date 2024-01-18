@@ -135,7 +135,6 @@ def createCustomer(request):
             user=user).update(**customer_update)
 
         customer = models.Customer.objects.get(user=user)
-        cart = models.Cart.objects.create(customer=customer)
         http_status = status.HTTP_200_OK
     except IOError as err:
         print(err)
