@@ -392,6 +392,3 @@ OrderItem ||--|| Product : has
 
 
 
-
-## Interface
-### หน้าหลัก
