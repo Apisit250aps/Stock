@@ -2,48 +2,32 @@
 
  
 
-## ขอบเขตของระบบ 
-
-ระบบ Marketplace นี้จะอนุญาตให้ผู้ใช้ทั่วไปสามารถเปิดร้านขายสินค้าหรือบริการได้ โดยระบบจะทำหน้าที่เป็นศูนย์กลางในการจับคู่ระหว่างผู้ซื้อและผู้ขาย 
-
-## ผู้ใช้งานระบบ 
-
-ผู้ใช้งานระบบแบ่งออกเป็น 2 ประเภท ได้แก่ 
-
-- ผู้ซื้อ : เป็นผู้ที่ต้องการซื้อสินค้าหรือบริการ 
-
-- ผู้ขาย : เป็นผู้ที่ต้องการขายสินค้าหรือบริการ 
-
-## คุณสมบัติของระบบ 
-
-ระบบ Marketplace มีคุณสมบัติดังต่อไปนี้ 
-- ผู้ใช้สมัคร และ ล็อกอินเข้าใช้งาน
-
-- มีระบบตะกร้าสินค้า
-
-- ผู้ซื้อสามารถสั่งซื้อสินค้าหรือบริการจากร้านขายได้ 
-
-- ผู้ซื้อสามารถสร้างคำสั่งซื้อ และ ยกเลิกคำสั่งซื้อได้ 
-
-- ผู้ซื้อสามารถเปิดร้านขายเป็นของตัวเองได้ 
-
-- ผู้ซื้อสามารถแก้ไขรายละเอียดที่อยู่ตัวเองได้
-
-- ผู้ขายสามารถสมัครสมาชิกและเปิดร้านขายสินค้าหรือบริการได้ 
-
-- ผู้ขายสามารถเพิ่มข้อมูลสินค้าหรือบริการลงในร้านของตัวเองได้ ทีละหลายรายการ
-
-- ผู้ขายสามารถเพิ่มหมวดหมู่สินค้าได้
-
-- ผู้ขายสามารถตั้งราคาและเงื่อนไขการขายสินค้าหรือบริการได้ 
-
-- ผู้ขายสามารถดูบันทึกการนำเข้าสินค้าได้
-   
-- ผู้ขายสามารถดูบันทึกการนำสินค้าออกได้
-
-- ผู้ขายสามารถดูคำสั่งซื้อได้ และ เปลี่ยนสถานะคำสั่งซื้อได้ 
-
-
+## Scope of the system
+The Marketplace system will allow general users to open a store to sell products or services. The system will act as a central hub for matching buyers and sellers.
+## System users
+System users are divided into two categories:
+Buyers: Those who want to buy products or services.
+Sellers: Those who want to sell products or services.
+## System features
+The Marketplace system has the following features:
+- User registration and login
+- Shopping cart system
+- Product and service ordering
+- Order creation and cancellation
+- Store creation
+- Address editing
+- Subscription and store opening for sellers
+- Product and service information management
+- Product category management
+- Price and sales condition setting
+- Import and export record viewing
+- Order viewing and status management
+## Additional details
+Developed using Django, Django REST Framework, and Vue.js
+Still under development, but partially functional
+Code available on GitHub
+## Conclusion
+The Marketplace system is a platform that connects buyers and sellers, providing features for transactions, order management, and store management. It's still under development, but has the potential to be a valuable resource for both parties.
 
 ## Entity Relations Diagram (ERD)
 ```mermaid
